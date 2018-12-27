@@ -1,0 +1,5 @@
+Name= Warlock
+
+Position= 1.0, 1.4, 4.2
+
+Velocity= 0.0, -0.01, 0.0
