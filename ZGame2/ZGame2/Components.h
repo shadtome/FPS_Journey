@@ -9,9 +9,10 @@
 #include <string>
 #include <fstream>
 #include <cmath>
-
 #include "Attributes.h"
-#include "Entity_Manager.h"
+
+//Forward Deceleration
+class Texture2D;
 
 
 
@@ -129,18 +130,49 @@ public:
 	//Position of the model (This is the position that the origin in the models local coordinates it mapped to)
 	glm::vec3 pos;
 
+	//Rotation information
+	//counter clockwise roation about the vector
+	float angle = 0;
+
+	glm::vec3 Vector_Rot = glm::vec3(0.0, 1.0, 0.0);
+
+
+
+
 };
 
 //-------------------------------------------------
 //Collision
+
+enum Collision_Options
+{
+	STATIC=0,
+	DYNAMIC=1,
+	WALL = 2
+};
+
+typedef unsigned int Collision_State;
+
+
 class Collision
 {
 public:
+	//Reference back to the IEntity
+	unsigned int Entity_ID = 0;
 	//Reference back to the Model Data for this entity
 	unsigned int Model_ID = 0;
+	
+	// Is the collision object statics or dynamic
+	Collision_Options State = STATIC;
+
+	//List of the vertices that are hashed in to the hash table
+	std::vector<glm::vec3> List_Vertices;
 
 	//AABB for this model
 	AABB box;
+	
+	// Vertices that represent the AABB
+	std::vector<float> points;
 
 	//Original Center of the AABB box in model Coordinates
 	glm::vec3 Original_Pos;
@@ -148,7 +180,12 @@ public:
 	// Bounding Sphere for this model
 	ColSphere sphere;
 
+	//Plane collision
+
 };
+
+// End of Collision
+//-------------------------------------------------
 
 class Health
 {

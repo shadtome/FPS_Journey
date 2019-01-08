@@ -60,6 +60,18 @@
     <ClInclude Include="Zombies.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Grid_Col.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics_Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics_System.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GJK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ZGame1Main.cpp">

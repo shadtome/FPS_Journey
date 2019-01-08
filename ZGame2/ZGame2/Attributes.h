@@ -1,7 +1,6 @@
 #ifndef ATTRIBUTES_H
 #define ATTRIBUTES_H
 
-#include "Components.h"
 
 typedef unsigned int Options;
 

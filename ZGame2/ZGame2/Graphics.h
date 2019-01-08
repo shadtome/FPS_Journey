@@ -4,27 +4,31 @@
 #include <glad/glad.h> // include glad to get all the required OpenGL headers
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "Entity_Manager.h"
-#include "Components.h"
 #include "Attributes.h"
-#include "Shader.h"
 #include <array>
+
+//Forward Decelerations
+class Shader;
+class Model;
+class Velocity;
+class Collision;
+class Entity_Manager;
 
 
 //Change the Position of the model
-void ChangeModel_Pos(Model &model, Velocity &vel)
+void ChangeModel_Pos(Model &model, Velocity &vel, float &deltatime)
 {
-	model.pos.x += vel.x;
-	model.pos.y += vel.y;
-	model.pos.z += vel.z;
+	model.pos.x += vel.x*deltatime;
+	model.pos.y += (vel.y)*deltatime;
+	model.pos.z += vel.z*deltatime;
 }
 
-void ChangeModel_Pos_World(Entity_Manager &world)
+void ChangeModel_Pos_World(Entity_Manager &world, float &deltatime)
 {
 	for (int k = 0; k < world.components.E_Model.Data.size(); ++k)
 	{
 		unsigned int vel_loc = world.components.E_Model.Data[k].Entity_Vel_ID;
-		(world.components.E_Model.Data[k], world.components.E_Vel.Data[vel_loc]);  
+		ChangeModel_Pos(world.components.E_Model.Data[k], world.components.E_Vel.Data[vel_loc],deltatime);  
 	}
 }
 
@@ -133,7 +137,8 @@ void Draw_World(Entity_Manager &world,glm::mat4 &projection, glm::mat4 &view, Sh
 		
 		model_matrix=glm::translate(model_matrix, world.components.E_Model.Data[k].pos);
 		model_matrix = glm::scale(model_matrix, glm::vec3(world.components.E_Model.Data[k].scale[0], world.components.E_Model.Data[k].scale[1], world.components.E_Model.Data[k].scale[2]));
-		
+		model_matrix = glm::rotate(model_matrix, world.components.E_Model.Data[k].angle, world.components.E_Model.Data[k].Vector_Rot);
+
 		Draw_Entity(world.components.E_Model.Data[k],projection,view,model_matrix,shader);
 
 		
@@ -143,6 +148,7 @@ void Draw_World(Entity_Manager &world,glm::mat4 &projection, glm::mat4 &view, Sh
 		{
 			//Reference to Collision data
 			int col_loc = world.components.E_Model.Data[k].Entity_Col_ID;
+
 			// Update the Collision Data
 			model_matrix = glm::mat4();
 			model_matrix = glm::translate(model_matrix, world.components.E_Model.Data[k].pos);
@@ -152,6 +158,7 @@ void Draw_World(Entity_Manager &world,glm::mat4 &projection, glm::mat4 &view, Sh
 			glm::vec3 cnewPos = glm::vec3(model_matrix*glm::vec4(original_pos, 1)); // Multiply the original position by the translation matrix from the translation of the model
 
 			world.components.E_Col.Data[col_loc].box.UpdateAABB(cnewPos); // Set new location for the center of the AABB
+			world.components.E_Col.Data[col_loc].sphere.Center = cnewPos; // Set new location for the center of the boudning sphere
 		}
 	}
 }

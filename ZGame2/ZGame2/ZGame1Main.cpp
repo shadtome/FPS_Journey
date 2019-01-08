@@ -94,24 +94,36 @@ int main()
 	Entity_Manager world;
 	//Texture 
 	Texture2D container_tex = ResourceManager::LoadTexture("/Users/Cody Tipton/Desktop/ZGame/ZGame1/container.jpg", false, "Test");
+	Texture2D Brick_wall = ResourceManager::LoadTexture("/Users/Cody Tipton/Desktop/GIT/Minecraft_brick.jpg", false, "Brick");
 	
-	
-	for (int k = 0; k < 10; ++k)
+	for (int k = 0; k <100; ++k)
 	{
-		Zombie_Create(world, container_tex, glm::vec3((float)k*10, 1.0f, 0.0f));
+		Zombie_Create(world, container_tex, glm::vec3((float)k*4, 0.0f, 0.0f));
+		
 	}
+	
+	for (int k = 0; k < 2; ++k)
+	{
+		Wall_Spawner(world, Brick_wall, glm::vec3(1.0,-6.0, -2 + (float)k * 2));
+	}
+	world.components.E_Model.Data[0].Vector_Rot = glm::vec3(1.0, 1.0, 0.0);
+
 
 	
 	
-
-
-
 	
+	
+	
+
+
+
+	// Enable FaceCulling
+	glEnable(GL_CULL_FACE);
 	
 	//Apply the depth z buffer (which is automatically used in OpenGL) (see another book for mathematical description of what is going on.)
 	glEnable(GL_DEPTH_TEST);
 	// captures the mouse cursor and keeps it in the screen
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	// this is how much of each texture I want to show more then the other (This was for the opacity of the smily face and the other texture on the floating cubes)
 
 	// render loop
@@ -152,37 +164,47 @@ int main()
 		
 
 
-		float walk = 10 * deltaTime;
+		float walk = 5 * deltaTime;
 		//Move a box around
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-			world.components.E_Model.Data[1].pos.y += walk;
+		{
+			world.components.E_Model.Data[0].pos.y += walk;
+		}
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-			world.components.E_Model.Data[1].pos.y -= walk;
+		{
+			world.components.E_Model.Data[0].pos.y -= walk;
+		}
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-			world.components.E_Model.Data[1].pos.x += walk;
+		{
+			world.components.E_Model.Data[0].pos.x += walk;
+		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-			world.components.E_Model.Data[1].pos.x -= walk;
-		
+		{
+			world.components.E_Model.Data[0].pos.x -= walk;
+		}
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		{
+			world.components.E_Model.Data[0].angle += 10 * deltaTime;
+		}
 		// Testing of some math to make a partition of a space
 		
-		int start = clock();
+		
 
-
-
-		int end = clock();
+		
 
 
 
 
 
 
-
+		
 		//Update everything
-		ChangeModel_Pos_World(world);
-		Check_Col_World(world);
-		//std::cout << world.components.E_Col.Data[1].box.Center.x << std::endl;
-		//std::cout << world.components.E_Col.Data[0].box.Center.x << std::endl;
+		ChangeModel_Pos_World(world,deltaTime);
+		
 		Draw_World(world,projection,view,Test);
+		int start = clock();
+		Check_Col_World(world);
+		int end = clock();
 
 
 		

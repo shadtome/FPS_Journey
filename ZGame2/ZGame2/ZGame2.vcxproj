@@ -129,7 +129,11 @@
     <ClInclude Include="Components.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="Entity_Manager.h" />
+    <ClInclude Include="GJK.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Grid_Col.h" />
+    <ClInclude Include="Physics_Math.h" />
+    <ClInclude Include="Physics_System.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />

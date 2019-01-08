@@ -11,6 +11,15 @@
 #include <cmath>
 #include "Components.h"
 #include "Attributes.h"
+#include "Grid_Col.h"
+
+
+//Forward Decelerations
+
+
+
+
+
 
 
 // Need to add the specific functions for Model and Collision
@@ -90,8 +99,8 @@ public:
 	void Input_Col(IEntity &entity, Collision col_data); // NEED TO FINISH THIS FUNCTION
 
 	//Template version ?? This might work better instead of repeating Code, if I can some how compactify the data for the COmponents
-	template<class T>
-	void Input_Component(IEntity &entity, T T_Data);
+	//template<class T>
+	//void Input_Component(IEntity &entity, T T_Data);
 
 	//Input Data for the Components
 	void Input_Comp_Data(IEntity &entity, Comp_Mask comp, const char* inputpath);
@@ -145,6 +154,10 @@ void Component_Manager::Input_Col(IEntity &entity, Collision col_data)
 	entity.Col_ID = E_Col.Data.size();
 	E_Col.Data.push_back(col_data);
 	E_Model.Data[entity.Model_ID].Entity_Col_ID = entity.Col_ID;
+	E_Col.Data[entity.Col_ID].Entity_ID = entity.ID;
+	E_Col.Data[entity.Col_ID].Model_ID = entity.Model_ID;
+
+
 }
 
 void Component_Manager::Input_Comp_Data(IEntity &entity, Comp_Mask comp, const char* inputpath)
@@ -183,6 +196,9 @@ public:
 	// Class that holds all the data for the components for each Entity
 	Component_Manager components;
 
+	//Grid that partittions the the space in to uniform grid (static objects dont change their grid location, while the dynamic ones do)
+	//Grid grid;
+
 
 	//Ids for the entities
 	unsigned int LastID = 0;
@@ -206,7 +222,13 @@ public:
 	void Input_Data(IEntity &entity, const char* inputpath); // Need a way to import information from a file to make things easier
 	// This is to import the information about the model (since the File importer for this is not finished yet)
 	void Input_Model(IEntity &entity, Model model);
+	//This is to import the information about the Collision data
+	void Input_Col(IEntity &entity, Collision col);
 
+
+
+	//Set Grid Up with all the static Entities (Make sure you do this last after all the Initalizations
+	//void Setup_Grid();
 };
 
 //Methods for the Entity_Manager Class
@@ -299,6 +321,25 @@ void Entity_Manager::Input_Model(IEntity &entity, Model model)
 {
 	components.Input_Model(entity, model);
 }
+
+void Entity_Manager::Input_Col(IEntity &entity, Collision col)
+{
+	
+	components.Input_Col(entity, col);
+	
+}
+
+/*void Entity_Manager::Setup_Grid()
+{
+	grid.Grid.reserve(pow(2, components.E_Col.Data.size()));
+	for (int k = 0; k < components.E_Col.Data.size(); ++k)
+	{
+		if (components.E_Col.Data[k].State == STATIC)
+		{
+			grid.Input_Into_Grid(components.E_Col.Data[k]);
+		}
+	}
+}*/
 
 // Lets try to make a systems Managment
 // Systems
