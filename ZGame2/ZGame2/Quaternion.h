@@ -119,11 +119,11 @@ Quarternion::Quarternion(glm::vec3 vector, float angle)
 
 Quarternion::Quarternion()
 {
-	Vector[0] = 1;
+	this->scalar=1;
 	
 	for (int k = 0; k < 3; ++k)
 	{
-		Vector[k + 1] = 0;
+		this->Vector[k] = 0;
 	}
 }
 
