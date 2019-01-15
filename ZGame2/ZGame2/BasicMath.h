@@ -7,10 +7,26 @@
 #include <glm/gtc/type_ptr.hpp>
 
 //--------------------------------------------------------------
-//Basis Collision Math
+//Basis Math
 
+
+//Overload the +operator to add two std::vectors<float>
+
+//----------------------------------------------------------------
+//Dot Product 
 //Take the dot product of two Vectors
 float Dot(std::vector<float> &V, std::vector<float> &W)
+{
+	float result = 0;
+	for (int k = 0; k < V.size(); ++k)
+	{
+		result = result + V[k] * W[k];
+	}
+	return result;
+}
+
+//Const version
+float Dot(const std::vector<float> &V, const std::vector<float> &W)
 {
 	float result = 0;
 	for (int k = 0; k < V.size(); ++k)
@@ -31,6 +47,30 @@ float Dot(glm::vec3 V, glm::vec3 W)
 	return result;
 }
 
+//Overload Dot Product for arrays
+float Dot(float V[3], float W[3])
+{
+	float result = 0;
+	for (int k = 0; k < 3; ++k)
+	{
+		result = result = V[k] * W[k];
+	}
+	return result;
+}
+
+//Const Version for the Dot Product and array
+float Dot(const float V[3], const float W[3])
+{
+	float result = 0;
+	for (int k = 0; k < 3; ++k)
+	{
+		result = result = V[k] * W[k];
+	}
+	return result;
+}
+
+//-------------------------------------------------------------------
+
 //Negate a vector
 glm::vec3 Negate(glm::vec3 &vector)
 {
@@ -38,6 +78,12 @@ glm::vec3 Negate(glm::vec3 &vector)
 }
 
 
+
+
+//---------------------------------------------------------------------------
+//Cross Product of two vectors
+
+//Cross Product of two vectors
 std::vector<float> Cross_prod(std::vector<float> &vec1, std::vector<float> &vec2)
 {
 	std::vector<float> result;
@@ -45,8 +91,25 @@ std::vector<float> Cross_prod(std::vector<float> &vec1, std::vector<float> &vec2
 	return result;
 }
 
+//Overlaod the crossproduct for float array and outputs a vector (since arrays can not be a output for a function, I can fix this by making a Vector class that has all the capabilties that I want)
+//Maybe glm::vec3 is sufficient? Might just make my own vector container to be efficient
+std::vector<float> Cross_Prod(float vec1[3], float vec2[3])
+{
+	std::vector<float> result;
+	result = { vec1[1] * vec2[2] - vec2[1] * vec1[2],-vec1[0] * vec2[2] + vec1[2] * vec2[0],vec1[0] * vec2[1] - vec2[0] * vec1[1] }; //vec1 x vec2
+	return result;
+}
+
+//Const version
+std::vector<float> Cross_Prod(const float vec1[3], const float vec2[3])
+{
+	std::vector<float> result;
+	result = { vec1[1] * vec2[2] - vec2[1] * vec1[2],-vec1[0] * vec2[2] + vec1[2] * vec2[0],vec1[0] * vec2[1] - vec2[0] * vec1[1] }; //vec1 x vec2
+	return result;
+}
+
 //Overload the cross product for glm
-glm::vec3 Cross_prod(glm::vec3 vec1, glm::vec3 vec2)
+glm::vec3 Cross_prod( glm::vec3 vec1, glm::vec3 vec2)
 {
 	glm::vec3 result;
 	result = { vec1[1] * vec2[2] - vec2[1] * vec1[2],-vec1[0] * vec2[2] + vec1[2] * vec2[0],vec1[0] * vec2[1] - vec2[0] * vec1[1] }; //vec1 x vec2
@@ -63,8 +126,7 @@ int Orientation(glm::vec3 &A,glm::vec3 &B, glm::vec3 &C, glm::vec3 D)
 		return 1;
 	if (triple_product > 0) // Dlies below, in the sense that ABC apear clockwise
 		return -1;
-	if (triple_product == 0) // The points are coplaner
-		return 0;
+	return 0; //This means triple_product ==0, and they are coplanar
 
 }
 

@@ -134,10 +134,12 @@
     <ClInclude Include="Grid_Col.h" />
     <ClInclude Include="Physics_Math.h" />
     <ClInclude Include="Physics_System.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Textures2D.h" />
+    <ClInclude Include="Vector.h" />
     <ClInclude Include="Zombies.h" />
     <ClInclude Include="Z_Game.h" />
   </ItemGroup>
