@@ -157,18 +157,18 @@ glm::mat4 Quarternion::Matrix_Rep() const
 
 glm::vec3 Quarternion::Conjugation(glm::vec3 &vector) const
 {
-	Quarternion* temp_quat=new Quarternion;
+	Quarternion temp_quat;
 	Quarternion Inverse;
 	//Inverse Scalar
 	Inverse.Vector = -Vector; 
 	Inverse.scalar = scalar;
 	//Temp quarternion representing the vector
-	temp_quat->Vector = vector; // Set the vector part as vector with out normalizing (we don't need to)
-	temp_quat->scalar = 0;  // Set the Scalar part as 0
+	temp_quat.Vector = vector; // Set the vector part as vector with out normalizing (we don't need to)
+	temp_quat.scalar = 0;  // Set the Scalar part as 0
 
 	glm::vec3 result;
 
-	result = ((*this)*(*temp_quat)*Inverse).Vector;   //qvq^{-1} conjugation to rotate the vector with respect to q
+	result = ((*this)*(temp_quat)*Inverse).Vector;   //qvq^{-1} conjugation to rotate the vector with respect to q
 
 	return result;
 }
