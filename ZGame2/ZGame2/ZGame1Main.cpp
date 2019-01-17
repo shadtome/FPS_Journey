@@ -96,7 +96,7 @@ int main()
 	Texture2D container_tex = ResourceManager::LoadTexture("/Users/Cody Tipton/Desktop/ZGame/ZGame1/container.jpg", false, "Test");
 	Texture2D Brick_wall = ResourceManager::LoadTexture("/Users/Cody Tipton/Desktop/GIT/Minecraft_brick.jpg", false, "Brick");
 	
-	for (int k = 0; k <100; ++k)
+	for (int k = 0; k <10; ++k)
 	{
 		Zombie_Create(world, container_tex, glm::vec3((float)k*4, 0.0f, 0.0f));
 		

@@ -122,23 +122,19 @@ void Check_Col_World(Entity_Manager &world)
 		grid.Input_Into_Grid_Sphere(world.components.E_Col.Data[k]);
 	}
 	
-	
-	
-	// Check collision for each bucket
-	for (auto k=grid.Grid.begin(); k!= grid.Grid.end(); ++k)
+	//Check Collision for each bucket
+	for (int k = 0; k<grid.Grid.bucket_count(); ++k) // go through each bucket
 	{
-		if (grid.Grid.bucket_size(grid.Grid.bucket(k->first)) > 1)
+		if (grid.Grid.bucket_size(k) > 1) // check if the bucket has at least 2 elements
 		{
-			//std::cout << grid.Grid.bucket_size(grid.Grid.bucket(k->first)) << std::endl;
-			for (auto key = grid.Grid.begin(grid.Grid.bucket(k->first)); key != grid.Grid.end(grid.Grid.bucket(k->first)); ++key)
+			for (auto key1 = grid.Grid.begin(k); key1 != grid.Grid.end(k); ++key1) // iterate through the enetities in the bucket
 			{
-
-				for (auto key2 = grid.Grid.begin(grid.Grid.bucket(k->first)); key2 != grid.Grid.end(grid.Grid.bucket(k->first)); ++key2)
+				for (auto key2 = grid.Grid.begin(k); key2 != grid.Grid.end(k); ++key2)
 				{
-					if (key != key2 && key->second->Entity_ID != key2->second->Entity_ID && key->second->State+key2->second->State != WALL+WALL) // Make sure we are not testing the same entity with it self, and to make sure they are both not walls(we dont want to see how walls collide with each other)
+					if (key1 != key2 && key1->second->Entity_ID != key2->second->Entity_ID && key1->second->State + key2->second->State != WALL + WALL) // Make sure we are not testing the same entity with it self
 					{
 						//Sphere
-						if (key->second->sphere.InterSphere(key2->second->sphere))
+						if (key1->second->sphere.InterSphere(key2->second->sphere))
 						{
 							//Check the GJK algorthim
 							//To do this, we need to transform one of the model global coordinates to the other local coordinates
@@ -151,32 +147,27 @@ void Check_Col_World(Entity_Manager &world)
 							model_matrix = glm::rotate(model_matrix, world.components.E_Model.Data[key2->second->Model_ID].angle, world.components.E_Model.Data[key2->second->Model_ID].Vector_Rot);
 
 							//Inverse matrix from global coordinates to local model coordinates for object for key
-							inverse_M = glm::rotate(inverse_M, -world.components.E_Model.Data[key->second->Model_ID].angle, world.components.E_Model.Data[key->second->Model_ID].Vector_Rot);
-							inverse_M = glm::scale(inverse_M, glm::vec3(1 / world.components.E_Model.Data[key->second->Model_ID].scale[0], 1 / world.components.E_Model.Data[key->second->Model_ID].scale[1], 1 / world.components.E_Model.Data[key->second->Model_ID].scale[2]));
-							inverse_M = glm::translate(inverse_M, -world.components.E_Model.Data[key->second->Model_ID].pos);
+							inverse_M = glm::rotate(inverse_M, -world.components.E_Model.Data[key1->second->Model_ID].angle, world.components.E_Model.Data[key1->second->Model_ID].Vector_Rot);
+							inverse_M = glm::scale(inverse_M, glm::vec3(1 / world.components.E_Model.Data[key1->second->Model_ID].scale[0], 1 / world.components.E_Model.Data[key1->second->Model_ID].scale[1], 1 / world.components.E_Model.Data[key1->second->Model_ID].scale[2]));
+							inverse_M = glm::translate(inverse_M, -world.components.E_Model.Data[key1->second->Model_ID].pos);
 
 							// Go from local coordinates key2 in to global coordinates and then in to local coordinates of key
 							model_matrix = inverse_M * model_matrix;
 							std::vector<float> key2_newpoints = TransformInto_model_coords(key2->second->points, model_matrix);
 
-							//std::cout << GJK_Col_3D(key->second->points, key2_newpoints) << std::endl;
-							if (GJK_Col_3D(key->second->points, key2_newpoints))
+							//std::cout << GJK_Col_3D(key1->second->points, key2_newpoints) << std::endl;
+							if (GJK_Col_3D(key1->second->points, key2_newpoints))
 							{
 								//physics
 							}
-
-
-
-
-
-
 						}
-						
 					}
 				}
 			}
 		}
 	}
+	
+	
 	
 }
 
