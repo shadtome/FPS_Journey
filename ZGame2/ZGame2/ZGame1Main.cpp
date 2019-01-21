@@ -132,12 +132,12 @@ int main()
 
 	//Set up the Joint Poses
 	JointPose Root_Pose(Quarternion(0.0, 0.0, 0.0, glm::radians(0.0)), glm::vec3(0.0, 0.0, 0.0), Root);
-	JointPose L_Thigh_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(0.0)), glm::vec3(0.0, 0.0, 1.0), L_Thigh);
-	JointPose L_Leg_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(-90.0)), glm::vec3(0.0, -2.0, 0.0), L_Leg);
-	JointPose L_Foot_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(-40.0)), glm::vec3(0.0, -2.0, 0.0), L_Foot);
-	JointPose R_Thigh_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(0.0)), glm::vec3(0.0, 0.0, -1.0), Root);
-	JointPose R_Leg_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(90.0)), glm::vec3(0.0, -2.0, 0.0), R_Leg);
-	JointPose R_Foot_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(-40.0)), glm::vec3(0.0, -2.0, 0.0), R_Foot);
+	JointPose L_Thigh_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(0.0)), glm::vec3(0.0, 0.0, 0.6), L_Thigh);
+	JointPose L_Leg_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(-90.0)), glm::vec3(0.0, -1.0, 0.0), L_Leg);
+	JointPose L_Foot_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(-60.0)), glm::vec3(0.0, -1.0, 0.0), L_Foot);
+	JointPose R_Thigh_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(0.0)), glm::vec3(0.0, 0.0, -0.6), Root);
+	JointPose R_Leg_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(90.0)), glm::vec3(0.0, -1.0, 0.0), R_Leg);
+	JointPose R_Foot_Pose(Quarternion(0.0, 0.0, 1.0, glm::radians(-10.0)), glm::vec3(0.0, -1.0, 0.0), R_Foot);
 	SkeletonPose Pose_1(skelly, std::vector<JointPose>{Root_Pose,L_Thigh_Pose, L_Leg_Pose, L_Foot_Pose,R_Thigh_Pose, R_Leg_Pose, R_Foot_Pose});
 	
 	L_Thigh_Pose.Rot_Quat= Quarternion(0.0, 0.0, 1.0, glm::radians(0.0));
@@ -150,10 +150,10 @@ int main()
 
 	L_Thigh_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(0.0));
 	L_Leg_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(90.0));
-	L_Foot_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(-40.0));
+	L_Foot_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(-10.0));
 	R_Thigh_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(.0));
 	R_Leg_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(-90.0));
-	R_Foot_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(-40.0));
+	R_Foot_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(-60.0));
 	SkeletonPose Pose_3(skelly, std::vector<JointPose>{Root_Pose, L_Thigh_Pose, L_Leg_Pose, L_Foot_Pose, R_Thigh_Pose, R_Leg_Pose, R_Foot_Pose});
 
 	L_Thigh_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(0.0));
@@ -166,10 +166,10 @@ int main()
 
 	L_Thigh_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(.0));
 	L_Leg_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(-90.0));
-	L_Foot_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(-40.0));
+	L_Foot_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(-60.0));
 	R_Thigh_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(0.0));
 	R_Leg_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(90.0));
-	R_Foot_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(-40.0));
+	R_Foot_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(-10.0));
 	SkeletonPose Pose_5(skelly, std::vector<JointPose>{Root_Pose, L_Thigh_Pose, L_Leg_Pose, L_Foot_Pose, R_Thigh_Pose, R_Leg_Pose, R_Foot_Pose});
 
 	Animation Anim("Wave", skelly, { {0.0, Pose_1}, { 0.5,Pose_2 },{1.0, Pose_3},{1.5,Pose_4},{2.0,Pose_5} });

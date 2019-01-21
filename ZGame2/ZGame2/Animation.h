@@ -121,7 +121,7 @@ std::vector<glm::mat4> Animator::New_Pose(float time)
 	float beta = (Current_Anim_Time - Cur_Anim.KeyFrames[k - 1].first) / (Cur_Anim.KeyFrames[k].first - Cur_Anim.KeyFrames[k - 1].first);
 
 	//Lerp Method
-	for (int j = 0; j < this->pskeleton->JointCount; ++j)
+	/*for (int j = 0; j < this->pskeleton->JointCount; ++j)
 	{
 		//Temporary quarternions/Pos
 		Quarternion temp_quat;
@@ -136,16 +136,16 @@ std::vector<glm::mat4> Animator::New_Pose(float time)
 		temp.Compile_Transform();
 		Temp_Pose.push_back(temp);
 
-
-	}
+		
+	}*/
 	
 	//Slerp Method, using Geodesics of the sphere
-	/*for (int j = 0; j < this->pskeleton->JointCount; ++j)
+	for (int j = 0; j < this->pskeleton->JointCount; ++j)
 	{
 		//Temporary quarternions/Pos
 		Quarternion temp_quat;
 		glm::vec3 temp_pos;
-		float angle = this->Cur_Anim.KeyFrames[k].second.Poses_Joints[j].Rot_Quat.Angle - this->Cur_Anim.KeyFrames[k - 1].second.Poses_Joints[j].Rot_Quat.Angle;
+		float angle = acos(glm::dot(this->Cur_Anim.KeyFrames[k].second.Poses_Joints[j].Rot_Quat.Vector,this->Cur_Anim.KeyFrames[k - 1].second.Poses_Joints[j].Rot_Quat.Vector));
 		//look at (1-beta) PoseJoint[k-1]+beta(PoseJoint[k]
 		temp_quat = this->Cur_Anim.KeyFrames[k].second.Poses_Joints[j].Rot_Quat*(sin(glm::radians(angle)*beta)/sin(glm::radians(angle)))+this->Cur_Anim.KeyFrames[k - 1].second.Poses_Joints[j].Rot_Quat*(sin(glm::radians(angle)*(1-beta)) / sin(glm::radians(angle)));
 
@@ -156,7 +156,7 @@ std::vector<glm::mat4> Animator::New_Pose(float time)
 		Temp_Pose.push_back(temp);
 
 
-	}*/
+	}
 
 	for (int i = 0; i <Temp_Pose.size(); ++i)
 	{
