@@ -5,6 +5,7 @@
 #include "Entity_Manager.h"
 #include "Graphics.h"
 #include "CollisionSystem.h"
+#include "Skeleton.h"
 
 float vertices[] = {
 -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -66,15 +67,17 @@ void Zombie_Create(Entity_Manager &world, Texture2D &texture,glm::vec3 pos)
 	model_data.pos = pos;
 	model_data.texture = &texture;
 	Set_VAO(model_data);
-	for (int k = 0; k < 3; ++k)
-	{
-		model_data.scale[k] = 1;
-	}
+	
+	// Set the scale of each axis to make a arm
+	model_data.scale[0] = .5;
+	model_data.scale[1] = .5;
+	model_data.scale[2] = .5;
+
 
 	//Set the Entity information
 	IEntity entity;
 	Attributes temp;
-	temp.Turn_Opt_On(NAME | MODEL | VELOCITY | COLLISION);
+	temp.Turn_Opt_On(NAME | MODEL | VELOCITY);
 	world.Include_Entity(entity, temp);
 
 
@@ -142,5 +145,14 @@ void Wall_Spawner(Entity_Manager &world, Texture2D &tex, glm::vec3 pos)
 	Setup_Collision(model_data, col);
 	world.components.Input_Col(entity, col);
 }
+
+
+
+
+
+
+
+
+
 
 #endif

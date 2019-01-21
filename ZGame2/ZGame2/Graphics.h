@@ -110,6 +110,11 @@ void Draw_Entity(Model &model,glm::mat4 &projection, glm::mat4 &view,glm::mat4 &
 	{
 		glDrawArrays(GL_TRIANGLES, 0, model.Number_Vertices);
 	}
+	// glDraw with Line Option
+	if (model.Graphics_Options.Is_Opt_On(LINES))
+	{
+		glDrawArrays(GL_LINES, 0, model.Number_Vertices);
+	}
 	//Unbind the current VAO
 	glBindVertexArray(0);
 }

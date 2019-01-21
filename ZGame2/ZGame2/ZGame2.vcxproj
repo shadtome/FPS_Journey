@@ -121,6 +121,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
+    <ClInclude Include="Skeleton.h" />
     <ClInclude Include="Attributes.h" />
     <ClInclude Include="BasicMath.h" />
     <ClInclude Include="Camera.h" />
