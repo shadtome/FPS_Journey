@@ -172,10 +172,10 @@ int main()
 	R_Foot_Pose.Rot_Quat = Quarternion(0.0, 0.0, 1.0, glm::radians(-10.0));
 	SkeletonPose Pose_5(skelly, std::vector<JointPose>{Root_Pose, L_Thigh_Pose, L_Leg_Pose, L_Foot_Pose, R_Thigh_Pose, R_Leg_Pose, R_Foot_Pose});
 
-	Animation Anim("Wave", skelly, { {0.0, Pose_1}, { 0.5,Pose_2 },{1.0, Pose_3},{1.5,Pose_4},{2.0,Pose_5} });
+	Animation Anim("Wave", skelly, { {0.0, Pose_1}, { 0.5,Pose_2 },{1.0, Pose_3},{1.5,Pose_4},{2.0,Pose_5} },LOOP);
 	Animator animator(skelly, Anim);
-
-
+	bool animate_go = true;
+	
 
 
 	float angle_1=0.0;
@@ -256,8 +256,13 @@ int main()
 			angle_2 += 100 * deltaTime;
 		}
 		
+		if (animate_go)
+		{
+			animate_go = false;
+			animator.Start_Animation(currentFrame);
+		}
 
-		std::vector<glm::mat4> new_coords=animator.New_Pose(currentFrame);
+		std::vector<glm::mat4> new_coords=animator.Animate(currentFrame);
 		
 		for (int k = 1; k < 7; ++k)
 		{

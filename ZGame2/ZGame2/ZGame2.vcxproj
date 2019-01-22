@@ -122,6 +122,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="Animation_Manager.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="Attributes.h" />
     <ClInclude Include="BasicMath.h" />

@@ -5,6 +5,12 @@
 #include "Skeleton.h"
 #include "Quaternion.h"
 
+enum Type_of_Animation
+{
+	LOOP,
+	ONE_OFF
+};
+
 //Class that holds the key frames for the animation
 struct Animation
 {
@@ -14,10 +20,13 @@ struct Animation
 
 	std::vector<std::pair<float,SkeletonPose>> KeyFrames; // key frames ordered <timeStamp, pose> 
 
+	//Type of animation loop?, a one off, ect...
+	Type_of_Animation Type;
+
 	//Make a Constructor
 	//Default Constructor
 	Animation();
-	Animation(const char* name, Skeleton &skeleton, std::vector<std::pair<float,SkeletonPose>> keyframes);
+	Animation(const char* name, Skeleton &skeleton, std::vector<std::pair<float,SkeletonPose>> keyframes,Type_of_Animation type);
 };
 
 //----------------------------------------------------
@@ -27,11 +36,12 @@ Animation::Animation()
 
 }
 
-Animation::Animation(const char* name, Skeleton &skeleton, std::vector<std::pair<float, SkeletonPose>> keyframes)
+Animation::Animation(const char* name, Skeleton &skeleton, std::vector<std::pair<float, SkeletonPose>> keyframes,Type_of_Animation type)
 {
 	Name = name;
 	pskeleton = &skeleton;
 	KeyFrames = keyframes;
+	this->Type = type;
 }
 
 
@@ -48,7 +58,7 @@ public:
 	float Start_Time;          //Global Start Time;
 	float End_Time;				//Local End_Time
 
-	bool Started = false;     // Is this animating?
+	bool Animating=false;     // Is this animating?
 	
 	//Make a Constructor
 	Animator(Skeleton &skeleton, Animation &animation);
@@ -56,15 +66,15 @@ public:
 	//Methods
 	//This takes in the time, and figures out what the new global joint transforms have to be.
 	//Start the Animation
-private:
+public:
 	void Start_Animation(float &time);
 	void End_Animation();
+	std::vector<glm::mat4> Animate(float &time);
 
-public:
+private:
 	//New Pose while the animation is going
-	std::vector<glm::mat4> New_Pose(float time);
+	std::vector<glm::mat4> New_Pose();
 
-	//End the Animation ?
 	
 };
 
@@ -81,29 +91,17 @@ Animator::Animator(Skeleton &skeleton, Animation &animation) :Current_Anim_Time(
 void Animator::Start_Animation(float &time)
 {
 	this->Start_Time = time;
-	this->Started = true;
+	this->Animating = true;
 }
 
 void Animator::End_Animation()
 {
-	this->Started = false;
-	Current_Anim_Time = 0.0;
-	
+	this->Animating = false;
 }
 
-std::vector<glm::mat4> Animator::New_Pose(float time)
+std::vector<glm::mat4> Animator::New_Pose()
 {
-	if (this->Started == false)
-	{
-		Start_Animation(time);
-	}
-
-	this->Current_Anim_Time = time - this->Start_Time;
-
-	if (this->Current_Anim_Time > this->End_Time)
-	{
-		End_Animation();
-	}
+	
 
 	std::vector<JointPose> Temp_Pose;					//this will be the Interpolated Quaternions/Pos  to make the Global Transforms
 	Temp_Pose.reserve(this->pskeleton->JointCount);
@@ -172,6 +170,40 @@ std::vector<glm::mat4> Animator::New_Pose(float time)
 }
 
 
+std::vector<glm::mat4> Animator::Animate(float &time)
+{
+	if (this->Animating)
+	{
+		this->Current_Anim_Time = time - this->Start_Time;
+
+		if (this->Cur_Anim.Type == LOOP)
+		{
+			if (this->Current_Anim_Time < this->End_Time)
+			{
+				return New_Pose();
+			}
+			else
+			{
+				Start_Animation(time);
+				this->Current_Anim_Time =0.0;
+				return New_Pose();
+			}
+		}
+
+		if (this->Cur_Anim.Type == ONE_OFF)
+		{
+			if (this->Current_Anim_Time < this->End_Time)
+			{
+				return New_Pose();
+			}
+			else
+			{
+				End_Animation();
+			}
+		}
+	}
+	//This does not return a value if it exits (so be warned, this it not finished yet) (NOTE: to my self)
+}
 
 
 
