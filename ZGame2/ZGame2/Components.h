@@ -1,6 +1,9 @@
 #ifndef COMPONENTS_H
 #define COMPONENTS_H
 
+#include <glm/glm.hpp> //the GLM math header files (all the awesome math goodness!!)
+#include <glm/gtc/matrix_transform.hpp>  //More math stuff from glm
+#include <glm/gtc/type_ptr.hpp>  //this is to change the way matrices look so that is can be implemted in to OpenGL
 #include <iostream>
 #include <map>
 #include <stdio.h>
@@ -10,10 +13,12 @@
 #include <fstream>
 #include <cmath>
 #include "Attributes.h"
+#include "Collision.h"
 
 //Forward Deceleration
 class Texture2D;
-
+class AABB;
+class ColSphere;
 
 
 

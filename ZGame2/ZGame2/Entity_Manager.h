@@ -13,6 +13,8 @@
 #include "Attributes.h"
 #include "Grid_Col.h"
 
+//Add method for Entity_Manager to do everything (draw entities, check collision, animate entities, ect..)
+
 
 //Forward Decelerations
 
@@ -224,6 +226,11 @@ public:
 	void Input_Model(IEntity &entity, Model model);
 	//This is to import the information about the Collision data
 	void Input_Col(IEntity &entity, Collision col);
+
+
+
+	//Activate the world (draw, collision, animate ect...)
+	void Activate();
 
 
 

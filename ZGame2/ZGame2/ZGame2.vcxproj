@@ -123,6 +123,7 @@
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Animation_Manager.h" />
+    <ClInclude Include="Levels.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="Attributes.h" />
     <ClInclude Include="BasicMath.h" />
@@ -140,15 +141,19 @@
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="State_Machine.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Textures2D.h" />
     <ClInclude Include="Vector.h" />
+    <ClInclude Include="Viewer.h" />
     <ClInclude Include="Zombies.h" />
     <ClInclude Include="Z_Game.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.cpp" />
     <ClCompile Include="Stb_image.cpp" />
+    <ClCompile Include="Testing_Ground.cpp" />
+    <ClCompile Include="Viewer.cpp" />
     <ClCompile Include="ZGame1Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

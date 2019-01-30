@@ -85,7 +85,7 @@ void Zombie_Create(Entity_Manager &world, Texture2D &texture,glm::vec3 pos)
 	world.Input_Model(entity, model_data);
 
 	//Input Data
-	world.Input_Data(entity, "/Users/Cody Tipton/Desktop/ZGame/Position_Test.txt");
+	world.Input_Data(entity, "/Users/Cody Tipton/Desktop/GIT/Position_Test.txt");
 
 	//Set the Collision Information
 	Collision col;
@@ -137,7 +137,7 @@ void Wall_Spawner(Entity_Manager &world, Texture2D &tex, glm::vec3 pos)
 	world.Input_Model(entity, model_data);
 
 	//Input Data
-	world.Input_Data(entity, "/Users/Cody Tipton/Desktop/ZGame/Position_Test.txt");
+	world.Input_Data(entity, "/Users/Cody Tipton/Desktop/GIT/Position_Test.txt");
 
 	//Set the Collision Information
 	Collision col;

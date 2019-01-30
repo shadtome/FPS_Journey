@@ -5,10 +5,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Attributes.h"
+#include "Shader.h"
 #include <array>
 
 //Forward Decelerations
-class Shader;
 class Model;
 class Velocity;
 class Collision;
