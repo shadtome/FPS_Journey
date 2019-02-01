@@ -123,6 +123,9 @@
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Animation_Manager.h" />
+    <ClInclude Include="Component_Manager.h" />
+    <ClInclude Include="ConfigureManager.h" />
+    <ClInclude Include="IEntity.h" />
     <ClInclude Include="Levels.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="Attributes.h" />
@@ -151,6 +154,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.cpp" />
+    <ClCompile Include="Attributes.cpp" />
+    <ClCompile Include="BasicMath.cpp" />
+    <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="CollisionSystem.cpp" />
+    <ClCompile Include="Components.cpp" />
+    <ClCompile Include="Component_Manager.cpp" />
+    <ClCompile Include="ConfigureManager.cpp" />
+    <ClCompile Include="Entity_Manager.cpp" />
+    <ClCompile Include="GJK.cpp" />
+    <ClCompile Include="Grid_Col.cpp" />
     <ClCompile Include="Stb_image.cpp" />
     <ClCompile Include="Testing_Ground.cpp" />
     <ClCompile Include="Viewer.cpp" />

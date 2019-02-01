@@ -96,6 +96,15 @@
     <ClInclude Include="Levels.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Component_Manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ZGame1Main.cpp">
@@ -111,6 +120,36 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Testing_Ground.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity_Manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Component_Manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GJK.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Components.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Attributes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid_Col.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
