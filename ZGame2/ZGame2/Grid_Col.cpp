@@ -15,10 +15,7 @@ void Grid::Set_Grid()
 void Grid::Input_Into_Grid(Collision &col)
 {
 
-	//Input the information in to the grid 
-	// THis is for the center
-	//Grid[col.box.Center] = &col;
-	// Now lets do the vertices of the AABB so we can get the most range of the collision
+	//Determine the hash function using this prime
 	Configure_Manager::PRIME = prime;
 	std::hash<glm::vec3> hasher;
 	// Initalize the center as the starting point for testing the hashed location
@@ -35,7 +32,7 @@ void Grid::Input_Into_Grid(Collision &col)
 	Hashed.push_back(q);
 
 
-
+	//Go through and input the vertices of the AABB box in to the hash grid, and not to input more then one vertices if they are in the same grid
 	for (int i = 0; i < 2; ++i)
 	{
 		for (int j = 0; j < 2; ++j)
@@ -69,10 +66,8 @@ void Grid::Input_Into_Grid(Collision &col)
 void Grid::Input_Into_Grid_Sphere(Collision &col)
 {
 
-	//Input the information in to the grid 
-	// THis is for the center
-	//Grid[col.box.Center] = &col;
-	// Now lets do the vertices of the AABB so we can get the most range of the collision
+	
+	//Determine the hash function with chosen prime number
 	Configure_Manager::PRIME = prime;
 	std::hash<glm::vec3> hasher;
 	// Initalize the center as the starting point for testing the hashed location
@@ -89,7 +84,7 @@ void Grid::Input_Into_Grid_Sphere(Collision &col)
 	Hashed.push_back(q);
 
 
-
+	//Input the 6 different sides of the sphere nin to the grid and make sure that the sphere is not put in tot eh same grid multply times
 	for (int i = 0; i < 2; ++i)
 	{
 		for (int j = 0; j < 2; ++j)

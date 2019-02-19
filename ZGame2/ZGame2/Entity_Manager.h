@@ -13,7 +13,12 @@
 #include "Attributes.h"
 #include "Grid_Col.h"
 
+
+//This is the entity manager, that keeps track of all entities in the game, that is represented by a unique ID.  
+//For example, a zombie, is represetned as a unique ID
+
 //Add method for Entity_Manager to do everything (draw entities, check collision, animate entities, ect..)
+
 
 
 //Forward Decelerations

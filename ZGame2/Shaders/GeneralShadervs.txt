@@ -1,0 +1,64 @@
+//Vertex Shader
+
+
+#version 450 core
+layout (location = 0) in vec3 aPos;			//Position of the vertices
+layout (location = 1) in vec3 aNormal;			//Normal vector for the vertices
+layout (location = 2) in vec2 aTexCoord;		//Textsure coords
+layout (location = 3) in uvec4 aJointIDs;		//Joints that affect this vertex
+layout (location = 4) in vec4 aJointWeights;		// How much this joint effects this vertex
+
+
+//parameters to Fragment Shader
+out vec3 Normal;					//Normal vector out to the fragment shader
+out vec3 FragPos;					//Fragments position vector in world coords
+out vec2 TexCoord;
+
+//Constants
+#define MAX_NUMBER_JOINTS 100				//there is a limit for array sizes, need to figure out what that max size is
+
+//Uniforms
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+uniform mat4 NormalMatrix;				//Inverse Transpose of the model Matrix
+uniform int JointIDs[MAX_NUMBER_JOINTS];		//Collection of jointIDs
+uniform mat4 Joint_Transforms[MAX_NUMBER_JOINTS];	//Collection of joint Transforms
+uniform bool skeleton;					//does this mesh have a skeleton?
+
+
+
+
+
+void main()
+{		
+		mat4 weightMatrix=mat4(vec4(1.0,0.0,0.0,0.0),vec4(0.0,1.0,0.0,0.0),vec4(0.0,0.0,1.0,0.0),vec4(0.0,0.0,0.0,1.0));						//Matrix that is the weighted sum of the joint transforms that effect this vertex
+		if(skeleton==true)
+		{
+			weightMatrix=0.0*weightMatrix;
+		
+			for(int k=0; k<3; ++k)
+			{
+				weightMatrix = aJointWeights[k]*Joint_Transforms[aJointIDs[k]]+weightMatrix;
+			}
+			float w_4=1.0;
+
+			for(int k=0; k<3; ++k)
+			{
+				w_4=w_4 - aJointWeights[k];
+			}
+
+			weightMatrix=weightMatrix + w_4*Joint_Transforms[aJointIDs[3]];
+		}
+		
+	
+		gl_Position = projection * view * model * weightMatrix * vec4(aPos,1.0f);
+
+		vec4 world_coord = vec4(model * vec4(aPos,1.0f));		//world coords of the fragment in world coordinats
+		FragPos = vec3(world_coord.x, world_coord.y, world_coord.z);
+	
+		Normal = vec3(NormalMatrix *weightMatrix* vec4(aNormal,0));
+
+		TexCoord = aTexCoord;
+
+}

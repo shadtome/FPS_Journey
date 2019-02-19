@@ -140,6 +140,8 @@ void Draw_World(Entity_Manager &world,glm::mat4 &projection, glm::mat4 &view, Sh
 	{	
 		glm::mat4 model_matrix;
 		
+		//Make the model matrix for this entitiy and map it from model coordinates to world coordinates.  Note that matrix mulplication by 
+		//these functions glm:: multiply on the right, so we need to pre compose
 		model_matrix=glm::translate(model_matrix, world.components.E_Model.Data[k].pos);
 		model_matrix = glm::scale(model_matrix, glm::vec3(world.components.E_Model.Data[k].scale[0], world.components.E_Model.Data[k].scale[1], world.components.E_Model.Data[k].scale[2]));
 		model_matrix = glm::rotate(model_matrix, world.components.E_Model.Data[k].angle, world.components.E_Model.Data[k].Vector_Rot);
@@ -166,6 +168,7 @@ void Draw_World(Entity_Manager &world,glm::mat4 &projection, glm::mat4 &view, Sh
 			world.components.E_Col.Data[col_loc].sphere.Center = cnewPos; // Set new location for the center of the boudning sphere
 		}
 	}
+	shader.Stop();
 }
 
 

@@ -38,6 +38,14 @@ ehthumbs.db
 Thumbs.db
 *.opendb
 
+# textures and model files #
+############################
+*.obj
+*.png
+*.dae
+*.blend
+*.fbx
+*.mtl
 
 
 

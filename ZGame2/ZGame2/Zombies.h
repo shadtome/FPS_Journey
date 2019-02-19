@@ -59,7 +59,7 @@ void Zombie_Create(Entity_Manager &world, Texture2D &texture,glm::vec3 pos)
 {
 	// Set the Model Data
 	Model model_data;
-	model_data.Graphics_Options.Turn_Opt_On(TRIANGLES | TEXTURES);
+	model_data.Graphics_Options.Turn_Opt_On(TRIANGLES |TEXTURES);
 	model_data.Vertices = vertices;
 	model_data.Number_Vertices = 36;
 	model_data.Number_Vertex_Attributes = 2;

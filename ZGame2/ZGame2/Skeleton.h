@@ -4,6 +4,7 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include "Quaternion.h"
 
@@ -11,7 +12,8 @@
 class SkeletonPose;
 class JointPose;
 
-
+//Forward Deceleration of function
+void Joint_to_Root_Transform(std::vector<JointPose> &Poses, JointPose &p, glm::mat4 &result);
 
 // the joints to a skeleton
 struct Joint
@@ -25,6 +27,8 @@ public:
 
 	int Parent_Index;  // if any, it might be the root of the skeleton so make it null
 
+	Joint* parent;		//Point to parent
+
 };
 
 
@@ -37,8 +41,15 @@ public:
 
 	std::vector<Joint>	Vector_Joints;  //Vector of joints
 
-	//Constructor
-	Skeleton(std::vector<Joint> joints);
+	//Constructors
+	Skeleton() {};
+	Skeleton(std::vector<Joint> &joints);
+
+	//Functions
+	/*Skeleton search function
+	* Search through the joints for the joint that has the specified name
+	*/
+	unsigned int Search(const char* name);
 
 };
 
@@ -61,6 +72,7 @@ public:
 	int Parent_Index;  // The index of its parent
 
 	//Constructor
+	JointPose(glm::mat4 local_transform, Joint &joint);
 	JointPose(Quarternion rot_quat, glm::vec3 pos_in_parent, Joint &joint);
 	
 	//Methods
@@ -81,94 +93,17 @@ public:
 	std::vector<glm::mat4> Global_Poses; // Poses from the children to the root (we can have different branches, like a human has different braches of of the skeleton)
 
 	//Constructor
+	SkeletonPose();
 	SkeletonPose(Skeleton &skeleton, std::vector<JointPose> jointposes);
+	SkeletonPose(Skeleton &skeleton, std::vector<glm::mat4> local_transforms);
 
 	//Methods
 	void Setup_Pose();
+	void Setup_Pose_Local();
 };
 
 
 
-//---------------------------------------------------------------------------------------------------------------
-//Skeleton Methods
-
-Skeleton::Skeleton(std::vector<Joint> joints)
-{
-	this->Vector_Joints = joints;
-	this->JointCount = joints.size();
-	for (int k = 0; k < this->JointCount; ++k)
-	{
-		this->Vector_Joints[k].ID = k;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-//JointPose Methods
-
-JointPose::JointPose(Quarternion rot_quat, glm::vec3 pos_in_parent, Joint &joint)
-{
-	this->Rot_Quat = rot_quat;
-	this->Pos_in_Parent = pos_in_parent;
-	this->pJoint = &joint;
-	this->Parent_Index = joint.Parent_Index;
-}
-
-void JointPose::Compile_Transform()
-{
-	
-	this->Total_transform = glm::translate(this->Total_transform, this->Pos_in_Parent); //transform to the position of the joint in parent space
-	this->Total_transform = glm::mat4(this->Rot_Quat.Matrix_Rep())*this->Total_transform; //multipliy first by the translation to move to its parent joint coordinates, then rotate it that space
-	
-}
-
-
-//-------------------------------------------------------------------------------
-// SkeletonPose Methods
-
-SkeletonPose::SkeletonPose(Skeleton &skeleton, std::vector<JointPose> jointposes)
-{
-	this->pSkeleton = &skeleton;
-	this->Poses_Joints = jointposes;
-}
-
-//Forward Deceleration for function which is down below
-void Joint_to_Root_Transform(std::vector<JointPose> &Poses, JointPose &p, glm::mat4 &result);
-
-void SkeletonPose::Setup_Pose()
-{
-	
-	//Allocate enough memory for the number of joints
-	this->Global_Poses.reserve(this->Poses_Joints.size());
-
-	//go through each joint and multiply all the corresponding matrices that from its parent joint to the root
-	for (int k = 0; k < this->Poses_Joints.size(); ++k)
-	{
-		glm::mat4 new_matrix;
-
-		Joint_to_Root_Transform(this->Poses_Joints, this->Poses_Joints[k],new_matrix);
-
-		this->Global_Poses.push_back(new_matrix);
-	}
-}
-
-
-//Forward Declared function from above
-//----------------------------------
-// Iterative method to multiply the matrices of the corresponding joints with their parents
-//Takes in the entire poses for a skeleton, and a specific pose from the smae list and return the Global Matrix to model space
-void Joint_to_Root_Transform(std::vector<JointPose> &Poses, JointPose &p,glm::mat4 &result)
-{
-	if (p.Parent_Index == -1)
-	{
-		return;					// If Null, then this is the ROOT, and hence exit out
-	}
-
-	Joint_to_Root_Transform(Poses, Poses[p.Parent_Index],result);		// Go to its parent joint and do the same thing
-
-	result = result * p.Total_transform;
-
-}
 
 
 #endif 

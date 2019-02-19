@@ -95,16 +95,19 @@ bool GJK_Col_3D(std::vector<float> &object1, std::vector<float> &object2)
 
 	// Determine the first vertex of the simplex
 	simplex.Vertices[0] = Supporting_Function(Dir, object1) - Supporting_Function(Neg_Dir, object2);
+	//Determine the second vertex of the simplex
 	simplex.Vertices[1] = Supporting_Function(Neg_Dir, object1) - Supporting_Function(Dir, object2);
 
-	Dir = { 0.0, 1.0, 1.0 };
+	Dir = { 0.0, 1.0, 1.0 };	//Arbitrary direction, to find the third vertex of the simplex
 	Neg_Dir = Negate(Dir);
 
+	//Find the third vertex of simplex
 	simplex.Vertices[2] = Supporting_Function(Dir, object1) - Supporting_Function(Neg_Dir, object2);
 
 
 	//We have a triangle, so we are determing which side of the supporting plane for the triangle that the origin is on and then
-	//determinet he vertex of the region to make a complete simplex
+	//determinet he vertex of the region to make a complete 4-simplex
+	//Determines the direction the origin is compared to the triangle
 	int orientation = Orientation(simplex.Vertices[0], simplex.Vertices[1], simplex.Vertices[2], glm::vec3(0, 0, 0));
 
 	//Obtain the normal to the face in the correct direction
@@ -116,11 +119,10 @@ bool GJK_Col_3D(std::vector<float> &object1, std::vector<float> &object2)
 	while (true)
 	{
 
-		//If orientation is 0, this means it is on the plane determined by these and we need to go to the 2D case
+		//If orientation is 0, then the 4th point is coplanar to the original triangle, hence we need to back up and find a new direction
 		if (orientation == 0)
 		{
 
-			//Do the 2D case for a plane that they are coplaner
 			//Idea is to go back one step and find the normal to the plane that they are coplaner on
 			// Then find a new vertex [2] in this direction and then hopefully this will result in a 3D case as usual
 			glm::vec3 New_Dir = Cross_prod(simplex.Vertices[1] - simplex.Vertices[0], simplex.Vertices[2] - simplex.Vertices[0]);

@@ -17,6 +17,10 @@ float Dot(glm::vec3 V, glm::vec3 W);
 float Dot(float V[3], float W[3]);
 float Dot(const float V[3], const float W[3]);
 
+//Norm
+float Norm(const glm::vec3 V);
+
+
 
 //Negate Vector
 glm::vec3 Negate(glm::vec3 &vector);

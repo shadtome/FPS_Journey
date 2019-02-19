@@ -7,9 +7,10 @@
 #include <glad/glad.h> // 
 #include <GLFW/glfw3.h> // this is the window application and the way we can look for inputs through keys and mouse
 #include "Camera.h"
+#include "Shader.h"
 
 //Forward Deceleration
-class Shader;
+
 
 
 //This header will hold the class that holds all the information for the window, screen color, certain matrices for projection and view
@@ -23,18 +24,18 @@ class Viewer
 public:
 	static void init(); // Displays the viewer until the program ends
 
-	static void Process_Input();
+	static void Process_Input();	//Process the Inputs (Keyboard controllers,ect...)
 
-	static void Swap_Buffers();
+	static void Swap_Buffers();		//Swap between two framebuffers
 
 	static void Game_Loop();  //This holds all the little game loops for the game, like level1, level2, main menu, pause menu, to do a state machine ect...
 
 	static float deltaTime;  //To make everybody have the same speed  
 
-	static float CurrentFrame;
+	static float CurrentFrame;	//Current frame
 
 	//Window
-	static GLFWwindow* Window;
+	static GLFWwindow* Window;		//window application 
 
 	//Projection matrix
 	static glm::mat4 Projection;
@@ -42,6 +43,8 @@ public:
 	//View Matrix
 	static glm::mat4 View;
 
+	//Lighting effects, needs position of light source
+	static void SetLighting(glm::vec3 pos, Shader shader);
 
 private:
 
@@ -72,7 +75,7 @@ private:
 	
 
 	//Things to be initialize
-	static void SetLighting();
+	
 	static void Display(); // Initalize all the basic display for glfw
 	static void SetGL(); // Set color (lighting)
 

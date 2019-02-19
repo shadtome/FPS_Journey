@@ -44,6 +44,7 @@ void Viewer::Process_Input()
 
 	//Get the view matrix from the camera
 	View = camera.GetViewMatrix();
+
 }
 
 void Viewer::Swap_Buffers()
@@ -144,4 +145,17 @@ void Viewer::FrameBuffer_Size_Callback(GLFWwindow* window, int width, int height
 	//make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significanly largeer then the specified on retina display
 	glViewport(0, 0, width, height);
+}
+
+
+//LIGHTING EFFECT!
+
+void Viewer::SetLighting(glm::vec3 pos, Shader shader)
+{
+	shader.use();
+	shader.setVec3("viewPos", Viewer::camera.Position);
+	shader.setVec3("light.ambient", 0.2, 0.2, 0.2);
+	shader.setVec3("light.diffuse", 0.5, 0.5, 0.5);
+	shader.setVec3("light.specular", 1.0, 1.0, 1.0);
+	shader.setVec3("lightPos", pos);
 }

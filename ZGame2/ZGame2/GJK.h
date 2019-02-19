@@ -20,7 +20,7 @@ public:
 	//Represents the vertices of the simplex
 	glm::vec3 Vertices[4];
 
-	bool ContainsOrigin(glm::vec3 &dir,int &orientation);
+	bool ContainsOrigin(glm::vec3 &dir,int &orientation);			// Deterimes if this simplex contains the origin
 };
 
 

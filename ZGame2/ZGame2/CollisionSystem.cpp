@@ -94,7 +94,6 @@ void Setup_Collision_World(Entity_Manager &world)
 
 
 
-// Use to grids, one big one and then partition it to a smaler grid in those grids (make it where objects that are super far apart whole accidently be in the same bucket (probability) is still hashed and pseudorandom
 
 // Check Collision between entities
 //This is not done, since we need a result after collision effect (like death, push back by physics, ect..)
@@ -134,12 +133,12 @@ void Check_Col_World(Entity_Manager &world)
 							model_matrix = glm::scale(model_matrix, glm::vec3(world.components.E_Model.Data[key2->second->Model_ID].scale[0], world.components.E_Model.Data[key2->second->Model_ID].scale[1], world.components.E_Model.Data[key2->second->Model_ID].scale[2]));
 							model_matrix = glm::rotate(model_matrix, world.components.E_Model.Data[key2->second->Model_ID].angle, world.components.E_Model.Data[key2->second->Model_ID].Vector_Rot);
 
-							//Inverse matrix from global coordinates to local model coordinates for object for key
+							//Inverse matrix from global coordinates to local model coordinates for object for key1
 							inverse_M = glm::rotate(inverse_M, -world.components.E_Model.Data[key1->second->Model_ID].angle, world.components.E_Model.Data[key1->second->Model_ID].Vector_Rot);
 							inverse_M = glm::scale(inverse_M, glm::vec3(1 / world.components.E_Model.Data[key1->second->Model_ID].scale[0], 1 / world.components.E_Model.Data[key1->second->Model_ID].scale[1], 1 / world.components.E_Model.Data[key1->second->Model_ID].scale[2]));
 							inverse_M = glm::translate(inverse_M, -world.components.E_Model.Data[key1->second->Model_ID].pos);
 
-							// Go from local coordinates key2 in to global coordinates and then in to local coordinates of key
+							// Go from local coordinates key2 in to global coordinates and then in to local coordinates of key1
 							model_matrix = inverse_M * model_matrix;
 							std::vector<float> key2_newpoints = TransformInto_model_coords(key2->second->points, model_matrix);
 
@@ -162,56 +161,3 @@ void Check_Col_World(Entity_Manager &world)
 
 
 
-//Check another method using Big Grid to partition the space in to big boxes and then do smaller grid in to those bigger boxes
-/*void Check_Col_World(Entity_Manager &world)
-{
-	Grid Big_grid;
-	Big_grid.prime = 17;
-	for (int k = 0; k < world.components.E_Col.Data.size(); ++k)
-	{
-		Big_grid.Input_Into_Grid(world.components.E_Col.Data[k]);
-	}
-
-
-	for (auto index = Big_grid.Grid.begin(); index != Big_grid.Grid.end(); ++index)
-	{
-		// Set up the grid and put the entities in to their respective buckets This restarts every time this function is called
-		Grid grid;
-		grid.prime = 3;
-		grid.Grid.reserve(pow(2, NUM_BUCKETS));
-		for (auto key = Big_grid.Grid.begin(Big_grid.Grid.bucket(index->first)); key != Big_grid.Grid.end(Big_grid.Grid.bucket(index->first)); ++key)
-		{
-			grid.Input_Into_Grid(*key->second);
-		}
-
-
-		// Check collision for each bucket
-		for (auto k = grid.Grid.begin(); k != grid.Grid.end(); ++k)
-		{
-			if (grid.Grid.bucket_size(grid.Grid.bucket(k->first)) > 1)
-			{
-				//std::cout << grid.Grid.bucket_size(grid.Grid.bucket(k->first)) << std::endl;
-				for (auto key = grid.Grid.begin(grid.Grid.bucket(k->first)); key != grid.Grid.end(grid.Grid.bucket(k->first)); ++key)
-				{
-
-					for (auto key2 = grid.Grid.begin(grid.Grid.bucket(k->first)); key2 != grid.Grid.end(grid.Grid.bucket(k->first)); ++key2)
-					{
-						if (key != key2)
-						{
-							if (key->second->Entity_ID != key2->second->Entity_ID)
-							{
-								key->second->box.InterTestAABB(key2->second->box);
-								//std::cout << key->second->box.InterTestAABB(key2->second->box) << std::endl;
-								//This is where I will put the Physics function in to, so we can have semi realisitic physics
-							}
-						}
-
-
-
-					}
-
-				}
-			}
-		}
-	}
-}*/

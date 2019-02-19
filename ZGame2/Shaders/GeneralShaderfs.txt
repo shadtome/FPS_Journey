@@ -1,0 +1,172 @@
+//Fragment Shader
+
+#version 450 core
+
+//Define constants
+#define MAX_TEXTURES 5
+
+//determines how lighting effects the materials
+struct MaterialTexture
+{
+	sampler2D diffuse[MAX_TEXTURES];
+	sampler2D specular[MAX_TEXTURES];
+	float 	  shininess;
+};
+
+struct Material
+{
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	float shininess;
+};
+
+struct Light
+{
+	vec3 positions;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
+//out
+out vec4 FragColor;
+
+
+//in
+in vec3 Normal;
+in vec3 FragPos;
+in vec2 TexCoord;
+
+//Uniforms
+uniform Light light;				//Set the light
+uniform MaterialTexture materialtexture;	//Texture material
+uniform Material material;			//material light colors
+uniform vec3 lightPos;				//light position in world coordinates
+uniform vec3 lightColor;
+uniform vec3 viewPos;				//position of the camera
+uniform bool textures;				//Does this object have textures?
+
+//Texture uniforms
+uniform sampler2D texture_diffuse1;
+uniform sampler2D texture_diffuse2;
+uniform sampler2D texture_specular1;
+uniform sampler2D texture_specular2;
+
+
+//Used for objects with textures
+vec3 Light_From_Source_Textured(Light light, sampler2D tex_diffuse, sampler2D tex_specular)
+{
+	//Ambient lighting
+	//This is used to find the distance from light source
+	float fragdist = pow(FragPos.x-lightPos.x,2)+pow(FragPos.y-lightPos.y,2)+pow(FragPos.z-lightPos.z,2);
+
+	float ambientStrength = 1/fragdist;
+	
+	vec3 ambient = ambientStrength * light.ambient * vec3(texture(tex_diffuse,TexCoord));
+	//vec3 ambient = vec3(texture(tex_diffuse,TexCoord));
+	
+
+	//diffuse
+	vec3 norm = normalize(Normal);
+
+	vec3 lightDir = normalize(lightPos - FragPos);		//Find the direction of the light source
+	
+	float diff = max(dot(norm,lightDir), 0.0);
+
+	
+	vec3 diffuse = diff * light.diffuse * vec3(texture(tex_diffuse,TexCoord));	//change the color of the textures with respect to the diffuse effect
+	
+
+	//Specular
+	float viewdist = pow(FragPos.x-viewPos.x,2)+pow(FragPos.y-viewPos.y,2)+pow(FragPos.z-viewPos.z,2);		//distance from the camera to the fragment position
+	
+	// direction vector from fragment position to the viewer
+	vec3 viewDir = normalize(viewPos - FragPos);
+
+	//Reflection direction based of the lirhgt source
+	// the reflect functin is defined as: for a given incident vector I and surface Normal
+	// N, reflect returns the reflection direction calculated as I-2.0<N,I>*N.
+	// We put -lightDir, since it is pointing away from the fragment position
+
+	vec3 reflectDir = reflect(-lightDir,norm);
+
+	float spec = pow( max( dot ( viewDir,reflectDir) , 0.0 ) , material.shininess );
+
+	vec3 specular = spec * light.specular * vec3(texture(tex_specular,TexCoord));
+	
+	
+	//results of all these together
+	vec3 result = (specular + ambient + diffuse);
+	
+	return result;
+}
+
+
+
+//Used for light objects with out textures on them.
+vec3 Light_From_Source(Light light, Material material)
+{
+	//Ambient lighting
+	//This is used to find the distance from light source
+	float fragdist = pow(FragPos.x-lightPos.x,2)+pow(FragPos.y-lightPos.y,2)+pow(FragPos.z-lightPos.z,2);
+
+	float ambientStrength = 1/fragdist;
+
+	vec3 ambient = light.ambient * material.ambient;
+	
+	
+
+	//diffuse
+	vec3 norm = normalize(Normal);
+
+	vec3 lightDir = normalize(lightPos - FragPos);		//Find the direction of the light source
+	
+	float diff = max(dot(norm,lightDir), 0.0);
+
+	vec3 diffuse = diff * light.diffuse * material.diffuse;	//change the color of the textures with respect to the diffuse effect
+
+
+	//Specular
+	float viewdist = pow(FragPos.x-viewPos.x,2)+pow(FragPos.y-viewPos.y,2)+pow(FragPos.z-viewPos.z,2);		//distance from the camera to the fragment position
+	
+	// direction vector from fragment position to the viewer
+	vec3 viewDir = normalize(viewPos - FragPos);
+
+	//Reflection direction based of the lirhgt source
+	// the reflect functin is defined as: for a given incident vector I and surface Normal
+	// N, reflect returns the reflection direction calculated as I-2.0<N,I>*N.
+	// We put -lightDir, since it is pointing away from the fragment position
+
+	vec3 reflectDir = reflect(-lightDir,norm);
+
+	float spec = pow( max( dot ( viewDir,reflectDir) , 0.0 ) , material.shininess );
+
+	vec3 specular = spec * light.specular * material.specular;
+	
+	
+	//results of all these together
+	vec3 result = (specular + ambient + diffuse);
+	
+	return result;
+}
+
+void main()
+{	
+	vec3 result_light;
+	if(textures==true)
+	{	
+		result_light=Light_From_Source_Textured(light,texture_diffuse1,texture_specular1)+Light_From_Source_Textured(light,texture_diffuse2,texture_specular2);
+	}
+	else
+	{
+		result_light=Light_From_Source(light,material);
+	}
+	
+	FragColor = vec4(result_light, 1.0);
+}
+
+
+
+
+

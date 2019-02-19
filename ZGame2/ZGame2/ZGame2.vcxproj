@@ -81,7 +81,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -122,11 +122,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="AnimationState.h" />
+    <ClInclude Include="AnimationSystem.h" />
     <ClInclude Include="Animation_Manager.h" />
+    <ClInclude Include="AssimpExchange.h" />
     <ClInclude Include="Component_Manager.h" />
     <ClInclude Include="ConfigureManager.h" />
     <ClInclude Include="IEntity.h" />
     <ClInclude Include="Levels.h" />
+    <ClInclude Include="LinearInterpolation.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="Attributes.h" />
     <ClInclude Include="BasicMath.h" />
@@ -146,6 +152,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="State_Machine.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="SyncFade.h" />
     <ClInclude Include="Textures2D.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="Viewer.h" />
@@ -154,6 +161,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.cpp" />
+    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimationState.cpp" />
+    <ClCompile Include="Animation_Manager.cpp" />
+    <ClCompile Include="AssimpExchange.cpp" />
     <ClCompile Include="Attributes.cpp" />
     <ClCompile Include="BasicMath.cpp" />
     <ClCompile Include="Collision.cpp" />
@@ -164,8 +175,17 @@
     <ClCompile Include="Entity_Manager.cpp" />
     <ClCompile Include="GJK.cpp" />
     <ClCompile Include="Grid_Col.cpp" />
+    <ClCompile Include="LinearInterpolation.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="Stb_image.cpp" />
+    <ClCompile Include="SyncFade.cpp" />
     <ClCompile Include="Testing_Ground.cpp" />
+    <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Viewer.cpp" />
     <ClCompile Include="ZGame1Main.cpp" />
   </ItemGroup>

@@ -14,6 +14,7 @@
 #include <cmath>
 #include "Attributes.h"
 #include "Collision.h"
+#include "Animation_Manager.h"
 
 //Forward Deceleration
 class Texture2D;
@@ -40,7 +41,8 @@ enum component_ID
 	AI = 0b00100000,
 	PLAYER = 0b01000000,
 	DOESDAMAGE = 0b10000000,
-	HEALTH = 0b0000000100000000
+	HEALTH = 0b0000000100000000,
+	ANIMATION = 0b0000001000000000
 };
 
 
@@ -145,6 +147,15 @@ public:
 
 
 
+};
+
+//-------------------------------------------------
+// Animation
+
+class Animation_Component
+{
+	Animation_Manager animations;				//Animation manager for the specific entity
+	Skeleton skeleton;
 };
 
 //-------------------------------------------------

@@ -59,6 +59,13 @@ float Dot(const float V[3], const float W[3])
 	return result;
 }
 
+//-----------------------------------------------------------------
+//Norm
+float Norm(const glm::vec3 V)
+{
+	return sqrt(Dot(V, V));
+}
+
 //-------------------------------------------------------------------
 
 //Negate a vector
@@ -99,7 +106,7 @@ std::vector<float> Cross_Prod(const float vec1[3], const float vec2[3])
 }
 
 //Overload the cross product for glm
-glm::vec3 Cross_prod(glm::vec3 vec1, glm::vec3 vec2)
+glm::vec3 Cross_prod(const glm::vec3 vec1, const glm::vec3 vec2)
 {
 	glm::vec3 result;
 	result = { vec1[1] * vec2[2] - vec2[1] * vec1[2],-vec1[0] * vec2[2] + vec1[2] * vec2[0],vec1[0] * vec2[1] - vec2[0] * vec1[1] }; //vec1 x vec2
@@ -110,7 +117,7 @@ glm::vec3 Cross_prod(glm::vec3 vec1, glm::vec3 vec2)
 int Orientation(glm::vec3 &A, glm::vec3 &B, glm::vec3 &C, glm::vec3 D)
 {
 	float triple_product = Dot(A - D, Cross_prod(B - D, C - D));
-	//std::cout << "Triple_product" << triple_product << std::endl;
+	// look at the plane determined by ABC
 
 	if (triple_product < 0) // D lies above the plane supported by ABC in the sense that ABC apear counterclockwise
 		return 1;
@@ -191,6 +198,14 @@ glm::vec3 Supporting_Function(glm::vec3 &dir, std::vector<float> &points)
 int FindIntPart(int prime, float x)
 {
 	int result;
-	result = ((int)x) - ((int)x) % prime; // Find the largest multply of the prime that is less then x
+
+	if (x > 0)
+	{
+		result = ((int)x) - ((int)x) % prime; // Find the largest multply of the prime that is less then x
+	}
+	else
+	{
+		result = ((int)x) + ((int)x) % prime; // Find the largest multply of the prime that is less then x
+	}
 	return result;
 }
