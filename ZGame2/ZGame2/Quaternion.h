@@ -23,10 +23,13 @@ public:
 	 Quarternion(float a_1, float a_2, float a_3, float angle);
 	 
 	 //Constructor with GLM Vector, Will normalize the vector to make it in to a quarternion if needed
-	 Quarternion(glm::vec3 vector, float angle);
+	 //Quarternion(glm::vec3 vector, float angle);
 
 	 //Constructor with std::vector
 	 Quarternion(std::vector<float> vector, float angle);
+
+	 //Constructor with vector and scalar
+	 Quarternion(glm::vec3 vector, float scalar);
 
 	 //Constructor with out varialbes, so the null Quarternion
 	 Quarternion();

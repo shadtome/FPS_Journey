@@ -42,11 +42,19 @@ void Full_Model::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shade
 		//NOTE the joint transforms has to have the same size as the number of bones in the skeleton
 		std::string index;
 		//Set the joints in the vertex shader for this skeleton
+		shader.setMat4("Joint_Transforms", joint_transforms);
 		for (unsigned int k = 0; k < this->skeleton.JointCount; ++k)
 		{
 			index = k;
 			shader.setInt(("JointIDs[" +index+ "]" ).c_str(), k);								//set joint IDs
-			shader.setMat4(("Joint_Transforms[" + index + "]"), joint_transforms[k]);		//set Joint transforms
+			//shader.setMat4(("Joint_Transforms[" + index + "]"), joint_transforms[k]);		//set Joint transforms
+			//shader.setMat4("Joint_Transforms", joint_transforms[k]);
+
+			/*for (unsigned int j = 0; j < 4; ++j)
+			{
+				std::cout << joint_transforms[k][0][j] << "::" << joint_transforms[k][1][j] << "::" << joint_transforms[k][2][j] << "::" << joint_transforms[k][3][j] << "::" << std::endl;
+			}*/
+			
 
 		}
 	}
@@ -69,6 +77,7 @@ void Full_Model::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shade
 	}
 	for (unsigned int i = 0; i < meshes.size(); ++i)
 	{
+		
 		meshes[i].Draw( projection, view, pos, shader);
 	}
 	shader.Stop();
@@ -110,13 +119,16 @@ void Full_Model::loadModel(std::string path)
 	}
 	directory = path.substr(0, path.find_last_of('/'));
 
+	//Get what kind of file it is, since different files have different coordinate systems
+	this->file_type=path.substr(path.find_last_of('.'), path.max_size() - 1);
+
 	//First, lets detect if this has textures
 	if (scene->HasTextures())
 	{
 		this->HasTextures = true;
 	}
 	
-
+	
 
 
 	//Process Skeleton before we start to process all the nodes, so we can have the skeleton structure ready to go for the processing the weights of the bones
@@ -124,10 +136,8 @@ void Full_Model::loadModel(std::string path)
 	std::vector<aiBone*> bones;
 	if (HasSkeleton)
 	{
-		
 		for (unsigned int k = 0; k < scene->mNumMeshes; ++k)			//Search through all the meshes and collect all the bones in one place
 		{
-			
 			if (scene->mMeshes[k]->HasBones())
 			{
 
@@ -140,8 +150,12 @@ void Full_Model::loadModel(std::string path)
 		}
 		ProcessSkeleton(scene,bones);
 	}
-
 	
+
+	if (scene->HasAnimations())
+	{
+		ProcessAnimation(scene, bones);
+	}
 	
 	ProcessNode(scene->mRootNode, scene,bones);
 
@@ -184,18 +198,37 @@ Mesh Full_Model::ProcessMesh(aiMesh* mesh, const aiScene* scene,std::vector<aiBo
 		
 		Vertex vertex;
 		glm::vec3 vector;
+		if (file_type == ".dae" || file_type == ".fbx")
+		{
+			//Position of verticesd
+			vector.x = mesh->mVertices[i].x;
+			vector.y = mesh->mVertices[i].z;
+			vector.z = -mesh->mVertices[i].y;
+			vertex.Position = vector;
 
-		//Position of verticesd
-		vector.x = mesh->mVertices[i].x;
-		vector.y = mesh->mVertices[i].y;
-		vector.z = mesh->mVertices[i].z;
-		vertex.Position = vector;
+			//Normals of vertices
+			vector.x = mesh->mNormals[i].x;
+			vector.y = mesh->mNormals[i].z;
+			vector.z = -mesh->mNormals[i].y;
+			vertex.Normal = vector;
+		}
+		else
+		{
+			//Position of verticesd
+			vector.x = mesh->mVertices[i].x;
+			vector.y = mesh->mVertices[i].y;
+			vector.z = mesh->mVertices[i].z;
+			vertex.Position = vector;
 
-		//Normals of vertices
-		vector.x = mesh->mNormals[i].x;
-		vector.y = mesh->mNormals[i].y;
-		vector.z = mesh->mNormals[i].z;
-		vertex.Normal = vector;
+			//Normals of vertices
+			vector.x = mesh->mNormals[i].x;
+			vector.y = mesh->mNormals[i].y;
+			vector.z = mesh->mNormals[i].z;
+			vertex.Normal = vector;
+		}
+
+	
+		
 
 		//Texture coordinates (note that Assimp allows each vertex to have up to 8 different texture coordinates per vertex
 		if (mesh->mTextureCoords[0]) //does the mesh have texture coordinates? 
@@ -209,7 +242,6 @@ Mesh Full_Model::ProcessMesh(aiMesh* mesh, const aiScene* scene,std::vector<aiBo
 		{
 			vertex.TexCoords=glm::vec2(0.0, 0.0);
 		}
-		
 		
 		//Joint IDs and weights
 		
@@ -238,10 +270,12 @@ Mesh Full_Model::ProcessMesh(aiMesh* mesh, const aiScene* scene,std::vector<aiBo
 			
 			for (unsigned int t = 0; t < counter; ++t)
 			{
-				
+				//std::cout << counter << std::endl;
+				//std::cout <<"JOINT IDS::vertexID"<< jointIDs[t] <<"::"<< i<< std::endl;
+				//std::cout << "JOINT WEIGHTS" << weights[t] << std::endl;
 				vertex.JointID[t] = jointIDs[t];
 				vertex.weights[t] = weights[t];
-				
+				vertex.Number_Joints = counter;
 			}
 			
 			
@@ -338,7 +372,7 @@ void Full_Model::ProcessSkeleton(const aiScene* scene,std::vector<aiBone*> &bone
 	std::vector < std::pair<aiBone*, aiNode*>> bone_Hierarachy;
 
 	aiBone* iterator = winner;
-	std::vector<Joint> joints = Construct_Bone_Hierarchy(winner, scene,bones);
+	std::vector<Joint> joints = Construct_Bone_Hierarchy(winner, scene,bones,file_type);
 	
 	/*for (unsigned int k = 0; k < joints.size(); ++k)
 	{
@@ -348,20 +382,111 @@ void Full_Model::ProcessSkeleton(const aiScene* scene,std::vector<aiBone*> &bone
 
 	Skeleton skelly(joints);
 	
+	
 	this->skeleton = skelly;
+	
+}
+
+
+//Process Animation..... This was convoluted, because of the way assimp has its data structure.
+void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &bones)
+{
+	//Go through each animation
+	for (unsigned int k = 0; k < scene->mNumAnimations; ++k)
+	{
+		
+		//Need times for the keyframes
+		std::vector<float> keyTimes;
+
+		//Need keyframes
+		std::vector<std::pair<float, SkeletonPose>> key_frames;
+
+		//Collection of keyframes for each bone, with each bone has its keyframes ordered 
+		//Each sub vector holds the Joint poses for keyframes for a specific bone
+		std::vector<std::vector<JointPose>> Coll_joint_poses;
+
+		//Go through each bone (channels)
+		for (unsigned int j = 0; j < scene->mAnimations[k]->mNumChannels; ++j)
+		{
+			//Which bone it is
+			int bone_index = this->skeleton.Search(scene->mAnimations[k]->mChannels[j]->mNodeName.C_Str());
+			
+			//Collection of key frames for this specific bone, for this specific animation
+			std::vector<JointPose> bone_keys;
+
+			//Check to make sure this bone is actually in the skeleton structure (it might be a biped system bone)
+			if (bone_index != -1)
+			{
+				//Go through each of the key frames for this bone
+				for (unsigned int i = 0; i < scene->mAnimations[k]->mChannels[j]->mNumPositionKeys; ++i)
+				{
+					//Basic information for Joint pose
+					Quarternion quat;
+					glm::vec3 pos;
+					glm::vec3 scale;
+
+					//Put in the information for the quat,pos, scale
+					quat = Assimp_QuatConv(scene->mAnimations[k]->mChannels[j]->mRotationKeys[i].mValue);
+					
+					pos.x = scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mValue.x;
+					pos.y = scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mValue.z;
+					pos.z = -scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mValue.y;
+					scale.x = scene->mAnimations[k]->mChannels[j]->mScalingKeys[i].mValue.x;
+					scale.y = scene->mAnimations[k]->mChannels[j]->mScalingKeys[i].mValue.z;
+					scale.z = -scene->mAnimations[k]->mChannels[j]->mScalingKeys[i].mValue.y;
+
+					//pos=((float)1/pos.length())*pos;
+					//pos = 0.0f * pos;
+					JointPose jpose(quat, pos, scale, skeleton.Vector_Joints[bone_index], this->skeleton);
+					bone_keys.push_back(jpose);
+
+					//This grabs the key frame times for later, we only need to do it once
+					if (j==0)
+					{
+						//This is ordered with respect to the keys
+						keyTimes.push_back(scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime);
+					}
+				}
+			}
+			
+			//Put in the ordered key frames 
+			Coll_joint_poses.push_back(bone_keys);
+		}
+		// set up the skeleton poses for each keyframes
+		for (unsigned int u = 0; u < scene->mAnimations[k]->mChannels[0]->mNumPositionKeys; ++u)		//# of keyframes for this animation
+		{
+			
+			//collection of joint poses for a specific key frame
+			std::vector<JointPose> poses;
+
+			for (unsigned int t = 0; t < skeleton.JointCount; ++t)
+			{
+				poses.push_back(Coll_joint_poses[t][u]);			//Go through each bone (t parameter) and pick the keyframe (u parameter)
+			}
+			//skeleton keyframe
+			SkeletonPose keyframe(skeleton, poses);
+			key_frames.push_back({ keyTimes[u],keyframe });
+		}
+
+		//Put the new collection of keyframes as a animation in to the data for model
+		Animation temp(scene->mAnimations[k]->mName.C_Str(), this->skeleton, key_frames, ONE_OFF);
+		this->Animations[scene->mAnimations[k]->mName.C_Str()]=temp;
+		
+		
+	}
+	
 }
 
 
 
 
-
-std::vector<Joint> Construct_Bone_Hierarchy(aiBone* bone, const aiScene* scene, std::vector<aiBone*> &bones)
+std::vector<Joint> Construct_Bone_Hierarchy(aiBone* bone, const aiScene* scene, std::vector<aiBone*> &bones,std::string &file_type)
 {
 	aiNode* node = scene->mRootNode->FindNode(bone->mName.C_Str());			//The node where this bone is located
 	Joint parent;
 	parent.Name = bone->mName.C_Str();
 	parent.Parent_Index = 0;
-	parent.M_invBindPose = Assimp_MatrixConv(bone->mOffsetMatrix);								//Need a function to transfer their matrix to mine
+	parent.M_invBindPose = Assimp_MatrixConv(bone->mOffsetMatrix,file_type);	
 
 	std::vector<Joint> result;
 
@@ -378,15 +503,15 @@ std::vector<Joint> Construct_Bone_Hierarchy(aiBone* bone, const aiScene* scene, 
 
 					//Define the child joint with this bone
 					childJ.Name = bones[j]->mName.C_Str();
-					childJ.M_invBindPose = Assimp_MatrixConv(bones[j]->mOffsetMatrix);					//Need a function to transfer their matrix to mine
+					childJ.M_invBindPose = Assimp_MatrixConv(bones[j]->mOffsetMatrix,file_type);					//Need a function to transfer their matrix to mine
 					childJ.Parent_Index = 0;
 
 
 					//Search through this child's children
-					std::vector<Joint> child_V = Construct_Bone_Hierarchy(bones[j], scene, bones);
+					std::vector<Joint> child_V = Construct_Bone_Hierarchy(bones[j], scene, bones,file_type);
 
 					//We need to set the parent_index to these children, since in their world, the parent index is 0
-					//so, all we need to do is add the size of the result to these to count for the fact we moved them back
+					//so, all we need to do is add the size of the result to these to count for the fact we moved them back in the vector
 					for (unsigned int j = 0; j < child_V.size(); ++j)
 					{
 						child_V[j].Parent_Index += result.size();

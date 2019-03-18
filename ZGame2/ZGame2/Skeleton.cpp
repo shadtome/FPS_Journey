@@ -1,4 +1,6 @@
 
+#include <cstring>
+#include <algorithm>
 #include "Skeleton.h"
 
 //---------------------------------------------------------------------------------------------------------------
@@ -6,53 +8,70 @@
 
 Skeleton::Skeleton(std::vector<Joint> &joints)
 {
+	this->Vector_Joints = joints;
 	for (unsigned int k = 0; k < joints.size(); ++k)
 	{
-		joints[k].ID = k;
+		this->Vector_Joints[k].ID = k;
 	}
 	
-	this->Vector_Joints = joints;
 	this->JointCount = joints.size();
 	this->Vector_Joints[0].Parent_Index = -1;		//by construction from AsSIMP, the first joint is always the root index, by construction
 	
 }
 
-unsigned int Skeleton::Search(const char* name)
+int Skeleton::Search(const char* name)
 {
 	for (unsigned int k = 0; k < this->JointCount; ++k)
 	{
-		if (name = this->Vector_Joints[k].Name)
+		if (strcmp(name,this->Vector_Joints[k].Name)==0)
 		{
 			return k;
 		}
 	}
+
+	//Otherwise, this means that this bone is not in the main bones (biped system) so hence not important for animation
+	return -1;
+	
 }
 
 
 //-----------------------------------------------------------------------------
 //JointPose Methods
 
-JointPose::JointPose(Quarternion rot_quat, glm::vec3 pos_in_parent, Joint &joint)
+JointPose::JointPose(Quarternion &rot_quat, glm::vec3 &pos_in_parent,glm::vec3 &scale, Joint &joint,Skeleton &skeleton)
 {
 	this->Rot_Quat = rot_quat;
 	this->Pos_in_Parent = pos_in_parent;
-	this->pJoint = &joint;
-	this->Parent_Index = joint.Parent_Index;
+	this->scale = scale;
+	this->pJoint = &skeleton.Vector_Joints[joint.ID];
+	
+}
+
+JointPose::JointPose(Quarternion &rot_quat, glm::vec3 &pos_in_parent, Joint &joint,Skeleton &skeleton)
+{
+	this->Rot_Quat = rot_quat;
+	this->Pos_in_Parent = pos_in_parent;
+	this->ID = joint.ID;
+	this->scale = glm::vec3(1.0, 1.0, 1.0);
+	this->pJoint = &skeleton.Vector_Joints[joint.ID];
+	
 }
 
 JointPose::JointPose(glm::mat4 local_transform, Joint &joint)
 {
 	this->Total_transform = local_transform;
 	this->pJoint = &joint;
-	this->Parent_Index = joint.Parent_Index;
+
 }
 
 void JointPose::Compile_Transform()
 {
-	
-	this->Total_transform = glm::translate(this->Total_transform, this->Pos_in_Parent); //transform to the position of the joint in parent space
-	this->Total_transform = glm::mat4(this->Rot_Quat.Matrix_Rep())*this->Total_transform; //multipliy first by the translation to move to its parent joint coordinates, then rotate it that space
-	this->Total_transform = this->Total_transform*this->pJoint->M_invBindPose;				//This constructs the skinning matrix(C*B^{-1}, where C is the current pose matrix, and B is the bind pose matrix(maps from joint coordinates to model coordinates)
+	glm::mat4 temp;
+	temp = temp;
+	temp = glm::translate(temp, this->Pos_in_Parent); //transform to the position of the joint in parent space
+	temp = glm::mat4(this->Rot_Quat.Matrix_Rep())*temp; //multipliy first by the translation to move to its parent joint coordinates, then rotate it that space
+	//temp = temp*glm::inverse(this->pJoint->M_invBindPose);				//This constructs the skinning matrix(C*B^{-1}, where C is the current pose matrix, and B is the bind pose matrix(maps from joint coordinates to model coordinates)
+	this->Total_transform = temp;
 }
 
 
@@ -66,6 +85,19 @@ SkeletonPose::SkeletonPose()
 
 SkeletonPose::SkeletonPose(Skeleton &skeleton, std::vector<JointPose> jointposes)
 {
+	//Sort the vector using the sort algorithmn in the STD library O(nlogn)
+	std::sort(jointposes.begin(), jointposes.end());
+	
+	//Tell the jointposes, where their parents are in the vector
+	//This vector is now sorted with respect to the same ordering as the joints in the skeleton
+	for (unsigned int k = 0; k < jointposes.size(); ++k)
+	{
+		jointposes[k].ID = k;
+		jointposes[k].Parent_Index = jointposes[k].pJoint->Parent_Index;
+	}
+	
+
+	//Input the data
 	this->pSkeleton = &skeleton;
 	this->Poses_Joints = jointposes;
 }
@@ -80,18 +112,19 @@ void SkeletonPose::Setup_Pose()
 	//Allocate enough memory for the number of joints
 	this->Global_Poses.reserve(this->Poses_Joints.size());
 
+	//Compilre matrix transforms for the joints.
 	for (unsigned int k = 0; k < this->Poses_Joints.size(); ++k)
 	{
 		this->Poses_Joints[k].Compile_Transform();
 	}
 
-	//go through each joint and multiply all the corresponding matrices that from its parent joint to the root
+	//go through each joint and multiply all the corresponding matrices from its parent joint to the root
 	for (int k = 0; k < this->Poses_Joints.size(); ++k)
 	{
 		glm::mat4 new_matrix;
 
 		Joint_to_Root_Transform(this->Poses_Joints, this->Poses_Joints[k], new_matrix);
-
+		//new_matrix = new_matrix* this->Poses_Joints[k].pJoint->M_invBindPose;	//The skinning Matrix
 		this->Global_Poses.push_back(new_matrix);
 	}
 }
@@ -104,6 +137,7 @@ void SkeletonPose::Setup_Pose_Local()
 		glm::mat4 new_matrix;
 
 		Joint_to_Root_Transform(this->Poses_Joints, this->Poses_Joints[k], new_matrix);
+		new_matrix = new_matrix * this->Poses_Joints[k].pJoint->M_invBindPose;
 
 		this->Global_Poses.push_back(new_matrix);
 	}

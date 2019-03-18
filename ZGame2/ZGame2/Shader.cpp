@@ -142,3 +142,15 @@ void Shader::setMat4(const std::string &name, glm::mat4 &mat) const
 	
 }
 
+void Shader::setMat4(const std::string &name, std::vector<glm::mat4> &mat)const
+{
+	
+	std::vector<float*> ptr_type;
+	for (unsigned int k = 0; k < mat.size(); ++k)
+	{
+		ptr_type.push_back(glm::value_ptr(mat[k]));
+	}
+
+	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()),mat.size(),GL_FALSE, ptr_type[0]);
+}
+

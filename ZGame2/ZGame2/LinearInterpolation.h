@@ -6,9 +6,9 @@
 
 //Lerp Function
 
-JointPose Lerp(float &beta, JointPose joint1, JointPose joint2);		//Lerp interpolation between two JointPoses
+JointPose Lerp(float &beta, JointPose joint1, JointPose joint2,Skeleton& skeleton);		//Lerp interpolation between two JointPoses
 
-JointPose Slerp(float &beta, JointPose joint1, JointPose joint2);		//Spherical Lerp interpolation between two Joint Poses
+JointPose Slerp(float &beta, JointPose joint1, JointPose joint2,Skeleton& skeleton);		//Spherical Lerp interpolation between two Joint Poses
 
 
 

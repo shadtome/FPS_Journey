@@ -18,6 +18,7 @@ struct Vertex
 	glm::vec2 TexCoords;				//coordinates of the textures for this vertex
 	unsigned int JointID[4];				//Which joints affect this vertex, when we skin this mesh to the skeleton
 	float weights[4];					//Weights of how the corresponding joint afffect this vertex
+	int Number_Joints;					//Number of joints affecting this vertex
 
 };
 

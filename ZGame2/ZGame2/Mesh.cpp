@@ -44,12 +44,16 @@ void Mesh::SetupMesh()
 
 	//Joint Name
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 4, GL_UNSIGNED_INT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, JointID));
+	glVertexAttribIPointer(3, 4, GL_UNSIGNED_INT, sizeof(Vertex), (void*)offsetof(Vertex, JointID));
 
 	//Joint Weights
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
 
+	//Number of joints affecting this vertex
+	glEnableVertexAttribArray(5);
+	glVertexAttribIPointer(5, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, Number_Joints));
+	
 	glBindVertexArray(0);
 
 

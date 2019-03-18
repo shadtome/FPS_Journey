@@ -11,6 +11,7 @@
 #include <sstream>
 #include <iostream>
 #include <map>
+#include <vector>
 
 class Shader
 {
@@ -40,6 +41,7 @@ public:
 
 	//utility uniform functions for Mat4
 	void setMat4(const std::string &name, glm::mat4 &mat) const;
+	void setMat4(const std::string &name, std::vector<glm::mat4> &mat)const;
 
 
 

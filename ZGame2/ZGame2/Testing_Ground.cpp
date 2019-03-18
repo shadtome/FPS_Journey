@@ -36,22 +36,68 @@ void Testing_Ground(State &state)
 	
 	Full_Model Crysis("/Users/Cody Tipton/Desktop/GIT/Models/Crysis/nanosuit.obj",false,true);
 	Full_Model Dummy2("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae",true,false);
-	Full_Model Dummy("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/free3Dmodel.fbx", true,false);
+	//Full_Model Dummy("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/free3Dmodel.dae", true,false);
+	Dummy2.Animations.begin()->second.Type = LOOP;
+	for (unsigned int k = 0; k < Dummy2.Animations.begin()->second.KeyFrames.size(); ++k)
+	{
+		Dummy2.Animations.begin()->second.KeyFrames[k].first = Dummy2.Animations.begin()->second.KeyFrames[k].first * 5;
+	}
+	
+	Animator testing(Dummy2.skeleton, Dummy2.Animations.begin()->second);
+	Animation hmmm= Dummy2.Animations.begin()->second;
+	testing.Start_Animation();
 
+	for (unsigned int k=0;k<hmmm.KeyFrames.size();++k)
+	{
+		std::cout << hmmm.KeyFrames[k].first << std::endl;
+		for (unsigned int j = 0; j < hmmm.KeyFrames[k].second.Poses_Joints.size(); ++j)
+		{
+			
+				//hmmm.KeyFrames[k].second.Poses_Joints[j].Compile_Transform();
+				for (unsigned int t = 0; t < 4; ++t)
+				{
+					//std::cout << hmmm.KeyFrames[k].second.Poses_Joints[j].Total_transform[0][t] << "::" << hmmm.KeyFrames[k].second.Poses_Joints[j].Total_transform[1][t] << "::" << hmmm.KeyFrames[k].second.Poses_Joints[j].Total_transform[2][t] << "::" << hmmm.KeyFrames[k].second.Poses_Joints[j].Total_transform[3][t] << "::" << std::endl;
+				}
+			
+		}
+	}
+	
 	std::vector<JointPose> poses;
 
-	for (unsigned int k = 0; k < Dummy.skeleton.JointCount; ++k)
+	/*for (unsigned int k = 0; k < Dummy.skeleton.JointCount; ++k)
 	{
 		glm::mat4 mat;
-		JointPose temp(glm::inverse(Dummy.skeleton.Vector_Joints[k].M_invBindPose),Dummy.skeleton.Vector_Joints[k]);
+		//JointPose temp(glm::inverse(Dummy.skeleton.Vector_Joints[k].M_invBindPose),Dummy.skeleton.Vector_Joints[k]);
+		JointPose temp(mat, Dummy.skeleton.Vector_Joints[k]);
 		poses.push_back(temp);
-		
+
 	}
 	SkeletonPose test(Dummy.skeleton, poses);
-	
+
 	std::vector<glm::mat4> matrices;
+
 	test.Setup_Pose_Local();
+
 	matrices = test.Global_Poses;
+	*/
+
+	std::vector<JointPose> poses2;
+
+	for (unsigned int k = 0; k < Dummy2.skeleton.JointCount; ++k)
+	{
+		glm::mat4 mat;
+		JointPose temp(glm::inverse(Dummy2.skeleton.Vector_Joints[k].M_invBindPose),Dummy2.skeleton.Vector_Joints[k]);
+		//JointPose temp(mat, Dummy2.skeleton.Vector_Joints[k]);
+		poses2.push_back(temp);
+		
+	}
+	SkeletonPose test2(Dummy2.skeleton, poses2);
+	
+	std::vector<glm::mat4> matrices2;
+	
+	test2.Setup_Pose_Local();
+	
+	matrices2 = test2.Global_Poses;
 	
 	/*for (unsigned int k = 0; k < matrices.size(); ++k)
 	{
@@ -356,6 +402,8 @@ void Testing_Ground(State &state)
 	float angle_2 = 0.0;
 	*/
 
+	testing.Start_Animation();
+
 	while (!glfwWindowShouldClose(Viewer::Window) && state==TEST)
 	{
 		Viewer::Process_Input();
@@ -413,13 +461,26 @@ void Testing_Ground(State &state)
 			world.components.E_Model.Data[k].pos = glm::vec3(Blend_Coords[k] * glm::vec4(0.0, 0.0, 0.0, 1.0));
 		}
 		*/
+		
+		
+
+		std::vector<glm::mat4> cody = testing.Animate(Viewer::deltaTime);
+
+		/*for (unsigned int k = 0; k < cody.size(); ++k)
+		{
+			for (unsigned int j = 0; j < 4; ++j)
+			{
+				std::cout << cody[k][0][j] << "::" << cody[k][1][j] << "::" << cody[k][2][j] << "::" << cody[k][3][j] << "::" << std::endl;
+			}
+		}*/
+		
 
 		
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
 		Crysis.Draw(Viewer::Projection,Viewer::View,glm::vec3(0.0,0.0,0.0),Nano);
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
-		Dummy.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 0.0), Nano,matrices);
-		Dummy2.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 0.0), Nano, matrices);
+		Dummy2.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 0.0), Nano,cody);
+		//Dummy.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 0.0), Nano, matrices);
 
 		//Change_Position
 		//Update everything

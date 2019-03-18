@@ -33,7 +33,8 @@ public:
 
 
 // the skeleton that holds all of its joints 
-
+//The question is, should I use a simple tree structure for this?
+//Once I get all the data in, it should be constant time in access the joints of this and their parents if I let them hold the index of its parent.
 class Skeleton
 {
 public:
@@ -46,10 +47,12 @@ public:
 	Skeleton(std::vector<Joint> &joints);
 
 	//Functions
+
 	/*Skeleton search function
 	* Search through the joints for the joint that has the specified name
+	* and out puts the index in the vector for this joint
 	*/
-	unsigned int Search(const char* name);
+	int Search(const char* name);
 
 };
 
@@ -61,7 +64,7 @@ public:
 
 	glm::vec3 Pos_in_Parent; //Position of this joint in its parent's coordinate system
 
-	float scale; //uniform scale for the joint pose
+	glm::vec3 scale; //uniform scale for the joint pose
 
 	Joint* pJoint;  // Point to the Joint , delete later
 
@@ -73,12 +76,25 @@ public:
 
 	//Constructor
 	JointPose(glm::mat4 local_transform, Joint &joint);
-	JointPose(Quarternion rot_quat, glm::vec3 pos_in_parent, Joint &joint);
+	JointPose(Quarternion &rot_quat, glm::vec3 &pos_in_parent,glm::vec3 &scale, Joint &joint,Skeleton &skeleton);
+	JointPose(Quarternion &rot_quat, glm::vec3 &pos_in_parent, Joint &joint,Skeleton &skeleton);
+
 	
 	//Methods
 	// This is used to put together the Quarternion rotation and the pos_in_parent to make a transform for this joint
 	void Compile_Transform();
+
+	//Overloaded comparison function
+	bool operator<(const JointPose& other)const
+	{
+		return pJoint->ID < other.pJoint->ID;
+	}
 };
+
+//Compare function for JointPose
+//This is used for when sorting a vector of JointPoses, to be just like the vector of Joints in a skeleton
+
+
 
 
 //Skeleton pose that is constructed through all the joints

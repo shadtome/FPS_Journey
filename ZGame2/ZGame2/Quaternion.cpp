@@ -53,7 +53,7 @@ Quarternion::Quarternion(std::vector<float> vector, float angle)
 }
 
 
-Quarternion::Quarternion(glm::vec3 vector, float angle)
+/*Quarternion::Quarternion(glm::vec3 vector, float angle)
 {
 	float norm_vector = pow(vector[0], 2) + pow(vector[1], 2) + pow(vector[2], 2);
 	if (norm_vector == 1)
@@ -75,6 +75,14 @@ Quarternion::Quarternion(glm::vec3 vector, float angle)
 		Vector[1] = vector[1] * sin_scale / norm;
 		Vector[2] = vector[2] * sin_scale / norm;
 	}
+}*/
+
+
+Quarternion::Quarternion(glm::vec3 vector, float scalar)
+{
+	this->Vector = vector;
+	this->scalar;
+	Norm();
 }
 
 Quarternion::Quarternion()

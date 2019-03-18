@@ -7,6 +7,7 @@ layout (location = 1) in vec3 aNormal;			//Normal vector for the vertices
 layout (location = 2) in vec2 aTexCoord;		//Textsure coords
 layout (location = 3) in uvec4 aJointIDs;		//Joints that affect this vertex
 layout (location = 4) in vec4 aJointWeights;		// How much this joint effects this vertex
+layout (location = 5) in int number_weights;		//Number of weights that is affecting this vertex
 
 
 //parameters to Fragment Shader
@@ -24,6 +25,7 @@ uniform mat4 projection;
 uniform mat4 NormalMatrix;				//Inverse Transpose of the model Matrix
 uniform int JointIDs[MAX_NUMBER_JOINTS];		//Collection of jointIDs
 uniform mat4 Joint_Transforms[MAX_NUMBER_JOINTS];	//Collection of joint Transforms
+//uniform mat4 Joint_Transforms;
 uniform bool skeleton;					//does this mesh have a skeleton?
 
 
@@ -35,29 +37,39 @@ void main()
 		mat4 weightMatrix=mat4(vec4(1.0,0.0,0.0,0.0),vec4(0.0,1.0,0.0,0.0),vec4(0.0,0.0,1.0,0.0),vec4(0.0,0.0,0.0,1.0));						//Matrix that is the weighted sum of the joint transforms that effect this vertex
 		if(skeleton==true)
 		{
-			weightMatrix=0.0*weightMatrix;
-		
-			for(int k=0; k<3; ++k)
-			{
-				weightMatrix = aJointWeights[k]*Joint_Transforms[aJointIDs[k]]+weightMatrix;
-			}
-			float w_4=1.0;
 
-			for(int k=0; k<3; ++k)
-			{
-				w_4=w_4 - aJointWeights[k];
+			float w=0;	//sum of weights
+
+			for(int k=0; k<number_weights; ++k)
+			{	
+								
+				w=w+aJointWeights[k];
+				//w=0;
 			}
 
-			weightMatrix=weightMatrix + w_4*Joint_Transforms[aJointIDs[3]];
+			if(w!=0)
+			{
+				weightMatrix=0.0*weightMatrix;
+				
+				for(int k=0; k<number_weights; ++k)
+				{
+					weightMatrix=aJointWeights[k]*Joint_Transforms[aJointIDs[k]]+weightMatrix;
+				}	
+				weightMatrix=(1/w)*weightMatrix;
+			}
+			if(w==0)
+			{
+				
+				weightMatrix=Joint_Transforms[7];
+			}
 		}
-		
 	
-		gl_Position = projection * view * model * weightMatrix * vec4(aPos,1.0f);
+		gl_Position = projection * view * model *weightMatrix* vec4(aPos,1.0f);
 
-		vec4 world_coord = vec4(model * vec4(aPos,1.0f));		//world coords of the fragment in world coordinats
+		vec4 world_coord = vec4(model *weightMatrix* vec4(aPos,1.0f));		//world coords of the fragment in world coordinats
 		FragPos = vec3(world_coord.x, world_coord.y, world_coord.z);
 	
-		Normal = vec3(NormalMatrix *weightMatrix* vec4(aNormal,0));
+		Normal = vec3(NormalMatrix * inverse(transpose(weightMatrix))*vec4(aNormal,0));	//Need inverse transpose of the matrix for weightmatrix
 
 		TexCoord = aTexCoord;
 

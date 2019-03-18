@@ -10,10 +10,17 @@
 #include <assimp/postprocess.h>
 #include <vector>
 #include <string>
+#include <map>
 
 
 /*
-INFORMATION HERE
+This class is used to import all model information using ASSIMP.  This importing process depends on what kind of file system,
+since different file systems have different coordinate systems.
+
+If the model has a skeleton, it imports that as well, includeing all the inverse bind poses, which are included in the skeleton system
+in the process of find the total transforms of the joints.
+
+If the model has animations as well, this imports these as well, and holds the data in this class
 
 
 
@@ -34,10 +41,11 @@ public:
 	bool HasTextures = false;
 
 	//List of animations
-	std::vector<Animation> Animations;
+	std::map<std::string,Animation> Animations;
 
 	//Skeleton Data
 	Skeleton skeleton;
+
 	
 	//Constructor
 	Full_Model(std::string path,bool hasskeleton,bool hastexture);			
@@ -51,11 +59,33 @@ private:
 	std::vector<Mesh> meshes;
 	
 	std::string directory;
+	std::string file_type;
 	//Functions
+
+	/* process through the nodes of the scene to find the bones
+	* and find the root bone, and all the children.  Takes the bones and
+	* puts them in to a skeleton structure.
+	*/
 	void ProcessSkeleton(const aiScene* scene,std::vector<aiBone*> &bones);
+
+	/* Starts the process of loading all the necessary information for the model.
+	* Processes the skeleton, the nodes, the meshes, and the textures/Materials
+	*/
 	void loadModel(std::string path);
+
+	/* Process this nodes corresponding meshes, and recursivly process the children nodes 
+	*/
 	void ProcessNode(aiNode *node, const aiScene* scene,std::vector<aiBone*> &bones);		//retrieve mesh indices, meshes, process each mesh and its children
+
+	/* This process the coordinates of the vertices, normals, texture coordinates,
+	* weights of the bones on the vertices, bone ids that affect the vertices, and the importing of the textures
+	*/
 	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene,std::vector<aiBone*> &bones);		//Translate iaMesh to a Mesh object that we defined
+
+	void ProcessAnimation(const aiScene* &scene,std::vector<aiBone*> &bones);
+
+	/*Process the material textures
+	*/
 	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 };
 
@@ -74,7 +104,7 @@ unsigned int Displacment_From_Root(const aiScene* scene, aiString name);
 /*
 Iterate through the bones and organize the vector with the children of the bone
 */
-std::vector<Joint> Construct_Bone_Hierarchy(aiBone* bone, const aiScene* scene,std::vector<aiBone*> &bones);
+std::vector<Joint> Construct_Bone_Hierarchy(aiBone* bone, const aiScene* scene,std::vector<aiBone*> &bones,std::string &file_type);
 
 
 /*determines if the tested int is in the list of vertices this weight effects

@@ -48,7 +48,7 @@ void SyncAnim::Start_Animation()
 	}
 }
 
-std::vector<JointPose> SyncAnim::New_Pose()
+SkeletonPose SyncAnim::New_Pose()
 {
 	int k = 1;
 	while (this->Blend_Ratio >k)

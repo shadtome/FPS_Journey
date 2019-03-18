@@ -7,7 +7,7 @@ Animation::Animation()
 
 }
 
-Animation::Animation(const char* name, Skeleton &skeleton, std::vector<std::pair<float, SkeletonPose>> keyframes, Type_of_Animation type)
+Animation::Animation(const char* name, Skeleton &skeleton, std::vector<std::pair<float, SkeletonPose>> &keyframes, Type_of_Animation type)
 {
 	Name = name;
 	pskeleton = &skeleton;
@@ -41,7 +41,7 @@ void Animator::End_Animation()
 	this->Animating = false;
 }
 
-std::vector<JointPose> Animator::New_Pose()
+SkeletonPose Animator::New_Pose()
 {
 
 
@@ -58,7 +58,7 @@ std::vector<JointPose> Animator::New_Pose()
 
 	//Set beta, which will be the blend parameter
 	float beta = (Current_Anim_Time - Cur_Anim.KeyFrames[k - 1].first) / (Cur_Anim.KeyFrames[k].first - Cur_Anim.KeyFrames[k - 1].first);
-
+	//std::cout << beta << std::endl;
 	//Lerp Method
 	/*for (int j = 0; j < this->pskeleton->JointCount; ++j)
 	{
@@ -72,14 +72,14 @@ std::vector<JointPose> Animator::New_Pose()
 	for (int j = 0; j < this->pskeleton->JointCount; ++j)
 	{
 		
-		JointPose temp = Slerp(beta, this->Cur_Anim.KeyFrames[k-1].second.Poses_Joints[j], this->Cur_Anim.KeyFrames[k].second.Poses_Joints[j]);
+		JointPose temp = Slerp(beta, this->Cur_Anim.KeyFrames[k-1].second.Poses_Joints[j], this->Cur_Anim.KeyFrames[k].second.Poses_Joints[j],*this->pskeleton);
 		Temp_Pose.push_back(temp);
 
-
+		//std::cout<<temp.Rot_Quat.Vector.x << "::" << temp.Rot_Quat.Vector.y << "::" << temp.Rot_Quat.Vector.z << std::endl;
 	}
 
-
-	return Temp_Pose;
+	SkeletonPose tempskellypose(*this->pskeleton, Temp_Pose);
+	return tempskellypose;
 }
 
 
@@ -101,7 +101,7 @@ std::vector<glm::mat4> Animator::Animate(float &deltatime)
 				return JointPoses_To_JointTransforms(New_Pose());
 			}
 		}
-
+		
 		if (this->Cur_Anim.Type == ONE_OFF)								//If the animation is oen_off, then end animation if current animation time is greater then end time
 		{
 			if (this->Current_Anim_Time < this->End_Time)
@@ -134,7 +134,9 @@ void Animator::End_Blending()
 	this->End_Animation();
 }
 
-std::vector<JointPose> Animator::Blend_Pose(float deltatime, Animator &other)
+
+
+SkeletonPose Animator::Blend_Pose(float deltatime, Animator &other)
 {
 	
 	std::vector<JointPose> Temp_Pose;					//this will be the Interpolated Quaternions/Pos  to make the Global Transforms
@@ -152,8 +154,8 @@ std::vector<JointPose> Animator::Blend_Pose(float deltatime, Animator &other)
 	float beta = deltatime;
 
 	//Import the animation jointPoses for animation one and animation 2
-	std::vector<JointPose> original = this->New_Pose();
-	std::vector<JointPose> other_JP = other.New_Pose();
+	SkeletonPose original = this->New_Pose();
+	SkeletonPose other_JP = other.New_Pose();
 
 	//std::cout << beta << std::endl;
 	//Slerp Method, using Geodesics of the sphere
@@ -161,15 +163,15 @@ std::vector<JointPose> Animator::Blend_Pose(float deltatime, Animator &other)
 	{
 		
 		//JointPose temp = Lerp(beta, original[j], other_JP[j]);
-		JointPose temp = Slerp(beta, original[j], other_JP[j]);
+		JointPose temp = Slerp(beta, original.Poses_Joints[j], other_JP.Poses_Joints[j],*this->pskeleton);
 		Temp_Pose.push_back(temp);
-
+		std::cout << "LOOK IN ANIMATION CPP FILE AND BLEND POSE TO MAKE SURE THIS WORKS" << std::endl;
 
 	}
 	
 	
-
-	return Temp_Pose;
+	
+	return SkeletonPose(*this->pskeleton,Temp_Pose);
 }
 
 /*
@@ -220,23 +222,17 @@ std::vector<glm::mat4>Animator::Blend_Animate(float &deltatime,Animator other)
 }*/
 
 
-std::vector<glm::mat4> JointPoses_To_JointTransforms(std::vector<JointPose> jointposes)
+std::vector<glm::mat4> JointPoses_To_JointTransforms(SkeletonPose skeletonpose)
 {
 	std::vector<glm::mat4> New_Inter_Global_Tran;
 
-	for (unsigned int k = 0; k < jointposes.size(); ++k)			//Make sure to compile each Jointpose's Matrix transform.
+	for (unsigned int k = 0; k < skeletonpose.Poses_Joints.size(); ++k)			//Make sure to compile each Jointpose's Matrix transform.
 	{
-		jointposes[k].Compile_Transform();
+		skeletonpose.Poses_Joints[k].Compile_Transform();
 	}
-
-	//Make these Quarternions in to Matrix transforms
-	for (int i = 0; i < jointposes.size(); ++i)
-	{
-		glm::mat4 new_matrix;
-		Joint_to_Root_Transform(jointposes, jointposes[i], new_matrix);
-
-		New_Inter_Global_Tran.push_back(new_matrix);
-
-	}
+	
+	
+	skeletonpose.Setup_Pose();
+	New_Inter_Global_Tran = skeletonpose.Global_Poses;
 	return New_Inter_Global_Tran;
 }

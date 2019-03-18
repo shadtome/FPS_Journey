@@ -35,7 +35,7 @@ public:
 	void Change_Blend_Ratio(float time);				//Change the Blend ratio, which afffects how two neighboring animations weights
 
 private:
-	std::vector<JointPose> New_Pose();					//New pose given based on two neighboring animations
+	SkeletonPose New_Pose();					//New pose given based on two neighboring animations
 
 };
 

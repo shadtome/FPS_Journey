@@ -26,7 +26,8 @@ struct Animation
 	//Make a Constructor
 	//Default Constructor
 	Animation();
-	Animation(const char* name, Skeleton &skeleton, std::vector<std::pair<float,SkeletonPose>> keyframes,Type_of_Animation type);
+	//Basic constructor to define everything we need
+	Animation(const char* name, Skeleton &skeleton, std::vector<std::pair<float,SkeletonPose>> &keyframes,Type_of_Animation type);
 };
 
 
@@ -64,12 +65,12 @@ public:
 	std::vector<glm::mat4> Blend_Animate(float &deltatime, Animator other);	
 
 	//New Blend Pose
-	std::vector<JointPose> Blend_Pose(float deltatime, Animator &other);	//Find the new interpolated pose between this animator and the other
+	SkeletonPose Blend_Pose(float deltatime, Animator &other);	//Find the new interpolated pose between this animator and the other
 
 
 private:
 	//New Pose while the animation is going
-	std::vector<JointPose> New_Pose();										// New pose based on the two key frames that the current animation time is between
+	SkeletonPose New_Pose();										// New pose based on the two key frames that the current animation time is between
 	
 
 	
@@ -77,7 +78,7 @@ private:
 
 
 //Change Vector of JointPoses to vector of matrix transforms
-std::vector<glm::mat4> JointPoses_To_JointTransforms(std::vector<JointPose> jointposes);
+std::vector<glm::mat4> JointPoses_To_JointTransforms(SkeletonPose skeletonpose);
 
 
 #endif
