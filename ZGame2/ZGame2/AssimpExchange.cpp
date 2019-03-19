@@ -30,9 +30,11 @@
 	//Now we need to transform it to our coordinate system
 	if (file_type == ".dae" || file_type == ".fbx")
 	{
+		//result = glm::transpose(result);
 		glm::mat4 rot(glm::vec4(1.0, 0.0, 0.0, 0.0), glm::vec4(0.0, 0.0, -1.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 0.0), glm::vec4(0.0, 0.0, 0.0, 1.0));
 		//glm::mat4 rot(glm::vec4(0.0, 0.0, 1.0, 0.0), glm::vec4(1.0, 0.0, 0.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 0.0), glm::vec4(0.0, 0.0, 0.0, 1.0));
-		result = rot * result;
+		result = rot * result*glm::inverse(rot);
+		
 	}
 	
 	
@@ -42,15 +44,32 @@
 }
 
 
-
+ glm::vec3 Assimp_Vec3Conv(aiVector3D &vec, std::string &file_type)
+ {
+	 glm::vec3 result;
+	 if (file_type == ".dae" || file_type == ".fbx")
+	 {
+		 result.x = vec.x;
+		 result.y = vec.z;
+		 result.z = -vec.y;
+	 }
+	 else
+	 {
+		 result.x = vec.x;
+		 result.y = vec.y;
+		 result.z = vec.z;
+	 }
+	 return result;
+ }
 
 
  Quarternion Assimp_QuatConv(aiQuaternion &quat)
 {
 	Quarternion result;
 
-	result.scalar = quat.w;
-	result.Vector = glm::vec3(quat.x, quat.z, -quat.y);
+	result.scalar = -quat.w;								//This is not right, check in the Quaternions for a explnation.  maybe the inverse function or conjuage messing it up
+	result.Vector = glm::vec3(quat.x, quat.z, -quat.y);		//The coordinate system from assimp is z-up, y-forward, and x-right.
+															//while opengl coordinate system is y-up, z-back, x-right
 	result.Norm();
 
 	return result;

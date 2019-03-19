@@ -45,6 +45,7 @@ public:
 
 	//Skeleton Data
 	Skeleton skeleton;
+	
 
 	
 	//Constructor

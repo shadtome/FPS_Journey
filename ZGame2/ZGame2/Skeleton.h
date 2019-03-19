@@ -40,6 +40,9 @@ class Skeleton
 public:
 	unsigned int JointCount; // Number of Joints
 
+	//Root Transform
+	glm::mat4 Root_Transform;
+
 	std::vector<Joint>	Vector_Joints;  //Vector of joints
 
 	//Constructors
@@ -64,7 +67,7 @@ public:
 
 	glm::vec3 Pos_in_Parent; //Position of this joint in its parent's coordinate system
 
-	glm::vec3 scale; //uniform scale for the joint pose
+	glm::vec3 scale; // scale for the joint pose
 
 	Joint* pJoint;  // Point to the Joint , delete later
 

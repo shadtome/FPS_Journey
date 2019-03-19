@@ -42,6 +42,9 @@ public:
 	std::vector<Texture> textures;
 	Skeleton skeleton;
 
+	//Mesh transformation to its parent
+	glm::mat4 mesh_transform;
+
 	//methods
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indieces, std::vector<Texture> textures);
 	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader);
@@ -49,6 +52,8 @@ public:
 private:
 	//Render Data
 	unsigned int VAO, VBO, EBO;
+
+	
 	
 	//methods
 	void SetupMesh();

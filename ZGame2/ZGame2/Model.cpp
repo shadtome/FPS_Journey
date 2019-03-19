@@ -38,25 +38,10 @@ void Full_Model::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shade
 	shader.use();
 	if (HasSkeleton)
 	{
+		//Sets if the vertices have a skeleton associated with it
 		shader.setBool("skeleton", true);
-		//NOTE the joint transforms has to have the same size as the number of bones in the skeleton
-		std::string index;
 		//Set the joints in the vertex shader for this skeleton
-		shader.setMat4("Joint_Transforms", joint_transforms);
-		for (unsigned int k = 0; k < this->skeleton.JointCount; ++k)
-		{
-			index = k;
-			shader.setInt(("JointIDs[" +index+ "]" ).c_str(), k);								//set joint IDs
-			//shader.setMat4(("Joint_Transforms[" + index + "]"), joint_transforms[k]);		//set Joint transforms
-			//shader.setMat4("Joint_Transforms", joint_transforms[k]);
-
-			/*for (unsigned int j = 0; j < 4; ++j)
-			{
-				std::cout << joint_transforms[k][0][j] << "::" << joint_transforms[k][1][j] << "::" << joint_transforms[k][2][j] << "::" << joint_transforms[k][3][j] << "::" << std::endl;
-			}*/
-			
-
-		}
+		shader.setMat4("Joint_Transforms", joint_transforms);	
 	}
 	else
 	{
@@ -128,6 +113,7 @@ void Full_Model::loadModel(std::string path)
 		this->HasTextures = true;
 	}
 	
+	//Need the root transformation 
 	
 
 
@@ -148,6 +134,7 @@ void Full_Model::loadModel(std::string path)
 				}
 			}
 		}
+
 		ProcessSkeleton(scene,bones);
 	}
 	
@@ -156,6 +143,7 @@ void Full_Model::loadModel(std::string path)
 	{
 		ProcessAnimation(scene, bones);
 	}
+	
 	
 	ProcessNode(scene->mRootNode, scene,bones);
 
@@ -172,7 +160,8 @@ void Full_Model::ProcessNode(aiNode* node, const aiScene* scene,std::vector<aiBo
 	{
 		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
 		meshes.push_back(ProcessMesh(mesh, scene,bones));
-		
+		meshes[i].mesh_transform = Assimp_MatrixConv(node->mTransformation,file_type);
+
 	}
 	//Then do the same for each of its children
 	for (unsigned int i = 0; i < node->mNumChildren; ++i)
@@ -197,39 +186,14 @@ Mesh Full_Model::ProcessMesh(aiMesh* mesh, const aiScene* scene,std::vector<aiBo
 	{
 		
 		Vertex vertex;
-		glm::vec3 vector;
-		if (file_type == ".dae" || file_type == ".fbx")
-		{
-			//Position of verticesd
-			vector.x = mesh->mVertices[i].x;
-			vector.y = mesh->mVertices[i].z;
-			vector.z = -mesh->mVertices[i].y;
-			vertex.Position = vector;
-
-			//Normals of vertices
-			vector.x = mesh->mNormals[i].x;
-			vector.y = mesh->mNormals[i].z;
-			vector.z = -mesh->mNormals[i].y;
-			vertex.Normal = vector;
-		}
-		else
-		{
-			//Position of verticesd
-			vector.x = mesh->mVertices[i].x;
-			vector.y = mesh->mVertices[i].y;
-			vector.z = mesh->mVertices[i].z;
-			vertex.Position = vector;
-
-			//Normals of vertices
-			vector.x = mesh->mNormals[i].x;
-			vector.y = mesh->mNormals[i].y;
-			vector.z = mesh->mNormals[i].z;
-			vertex.Normal = vector;
-		}
-
-	
 		
+		//Position of vertices
+		vertex.Position = Assimp_Vec3Conv(mesh->mVertices[i], this->file_type);
 
+		//Normals of vertices
+		vertex.Normal = Assimp_Vec3Conv(mesh->mNormals[i], this->file_type);
+		
+		
 		//Texture coordinates (note that Assimp allows each vertex to have up to 8 different texture coordinates per vertex
 		if (mesh->mTextureCoords[0]) //does the mesh have texture coordinates? 
 		{
@@ -270,9 +234,6 @@ Mesh Full_Model::ProcessMesh(aiMesh* mesh, const aiScene* scene,std::vector<aiBo
 			
 			for (unsigned int t = 0; t < counter; ++t)
 			{
-				//std::cout << counter << std::endl;
-				//std::cout <<"JOINT IDS::vertexID"<< jointIDs[t] <<"::"<< i<< std::endl;
-				//std::cout << "JOINT WEIGHTS" << weights[t] << std::endl;
 				vertex.JointID[t] = jointIDs[t];
 				vertex.weights[t] = weights[t];
 				vertex.Number_Joints = counter;
@@ -374,14 +335,10 @@ void Full_Model::ProcessSkeleton(const aiScene* scene,std::vector<aiBone*> &bone
 	aiBone* iterator = winner;
 	std::vector<Joint> joints = Construct_Bone_Hierarchy(winner, scene,bones,file_type);
 	
-	/*for (unsigned int k = 0; k < joints.size(); ++k)
-	{
-		std::cout << joints[k].Parent_Index << "::" << k << std::endl;
-	}*/
 
 
 	Skeleton skelly(joints);
-	
+	skelly.Root_Transform =Assimp_MatrixConv( scene->mRootNode->mTransformation,file_type);
 	
 	this->skeleton = skelly;
 	
@@ -428,17 +385,13 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 					//Put in the information for the quat,pos, scale
 					quat = Assimp_QuatConv(scene->mAnimations[k]->mChannels[j]->mRotationKeys[i].mValue);
 					
-					pos.x = scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mValue.x;
-					pos.y = scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mValue.z;
-					pos.z = -scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mValue.y;
-					scale.x = scene->mAnimations[k]->mChannels[j]->mScalingKeys[i].mValue.x;
-					scale.y = scene->mAnimations[k]->mChannels[j]->mScalingKeys[i].mValue.z;
-					scale.z = -scene->mAnimations[k]->mChannels[j]->mScalingKeys[i].mValue.y;
+					//Pos of the joints in its parent for this keyframe
+					pos = Assimp_Vec3Conv(scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mValue,this->file_type);
+					scale = Assimp_Vec3Conv(scene->mAnimations[k]->mChannels[j]->mScalingKeys[i].mValue,this->file_type);
 
-					//pos=((float)1/pos.length())*pos;
-					//pos = 0.0f * pos;
 					JointPose jpose(quat, pos, scale, skeleton.Vector_Joints[bone_index], this->skeleton);
 					bone_keys.push_back(jpose);
+	
 
 					//This grabs the key frame times for later, we only need to do it once
 					if (j==0)
@@ -487,6 +440,7 @@ std::vector<Joint> Construct_Bone_Hierarchy(aiBone* bone, const aiScene* scene, 
 	parent.Name = bone->mName.C_Str();
 	parent.Parent_Index = 0;
 	parent.M_invBindPose = Assimp_MatrixConv(bone->mOffsetMatrix,file_type);	
+	
 
 	std::vector<Joint> result;
 

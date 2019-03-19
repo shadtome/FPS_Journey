@@ -67,10 +67,13 @@ JointPose::JointPose(glm::mat4 local_transform, Joint &joint)
 void JointPose::Compile_Transform()
 {
 	glm::mat4 temp;
-	temp = temp;
-	temp = glm::translate(temp, this->Pos_in_Parent); //transform to the position of the joint in parent space
-	temp = glm::mat4(this->Rot_Quat.Matrix_Rep())*temp; //multipliy first by the translation to move to its parent joint coordinates, then rotate it that space
-	//temp = temp*glm::inverse(this->pJoint->M_invBindPose);				//This constructs the skinning matrix(C*B^{-1}, where C is the current pose matrix, and B is the bind pose matrix(maps from joint coordinates to model coordinates)
+	// we are doing it in this order becuase of the way glm does the translattion/scale operations.
+	//It does it by multiplying the scale matrix or translate matrix on the right.
+	//hence the bottom matrix is of the form temp=temp*T*R*S
+	temp = glm::translate(temp, this->Pos_in_Parent); 
+	temp = temp* glm::mat4(this->Rot_Quat.Matrix_Rep()); 
+	temp = glm::scale(temp, this->scale);
+
 	this->Total_transform = temp;
 }
 
@@ -123,8 +126,11 @@ void SkeletonPose::Setup_Pose()
 	{
 		glm::mat4 new_matrix;
 
+		//multiplies the matrices from joint coordinates to its parent coordinates till we get to the root joint
 		Joint_to_Root_Transform(this->Poses_Joints, this->Poses_Joints[k], new_matrix);
-		//new_matrix = new_matrix* this->Poses_Joints[k].pJoint->M_invBindPose;	//The skinning Matrix
+		
+		//This is the skinning matrix to connect the vertifces with the bones in the shader
+		new_matrix = glm::inverse(this->pSkeleton->Root_Transform)* new_matrix* this->Poses_Joints[k].pJoint->M_invBindPose;	
 		this->Global_Poses.push_back(new_matrix);
 	}
 }

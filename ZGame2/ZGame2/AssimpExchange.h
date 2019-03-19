@@ -26,8 +26,9 @@
  Quarternion Assimp_QuatConv(aiQuaternion &quat);
 
 
-
-
+/* Transform the Assimp vectors to glm vec3
+*/
+ glm::vec3 Assimp_Vec3Conv(aiVector3D &vec, std::string &file_type);
 
 
 

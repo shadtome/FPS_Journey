@@ -96,7 +96,8 @@ void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shad
 
 	//Set uniforms for matrices
 	glm::mat4 model_matrix;
-	model_matrix = glm::translate(model_matrix, pos);
+	
+	model_matrix = glm::translate(model_matrix, glm::vec3(this->mesh_transform*glm::vec4(pos,1)));
 	
 	shader.setMat4("projection", projection);
 	shader.setMat4("view", view);
