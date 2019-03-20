@@ -93,6 +93,52 @@ void Full_Model::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shade
 }
 
 
+//Import Animation Function
+void Full_Model::Import_Animation(std::string file, Type_of_Animation type,std::string name)
+{
+	
+	if (HasSkeleton)
+	{
+		Assimp::Importer import;	//Import the file 
+		const aiScene* scene = import.ReadFile(file, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_LimitBoneWeights);
+
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+		{
+			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;				//Check if ASSIMP through a error
+		}
+		directory = file.substr(0, file.find_last_of('/'));
+		
+		std::vector<aiBone*> bones;
+		if (HasSkeleton)
+		{
+			for (unsigned int k = 0; k < scene->mNumMeshes; ++k)			//Search through all the meshes and collect all the bones in one place
+			{
+				if (scene->mMeshes[k]->HasBones())
+				{
+
+					for (unsigned int j = 0; j < scene->mMeshes[k]->mNumBones; ++j)
+					{
+
+						bones.push_back(scene->mMeshes[k]->mBones[j]);
+					}
+				}
+			}
+		}
+		//Process animations
+		if (scene->HasAnimations())
+		{
+			ProcessAnimation(scene, bones,type,name);
+		}
+		import.FreeScene();
+	}
+	//otherwise do nothing
+}
+
+
+
+
+
 void Full_Model::loadModel(std::string path)
 {
 	Assimp::Importer import;	//importer object from and we will use its ReadFile function
@@ -141,14 +187,15 @@ void Full_Model::loadModel(std::string path)
 
 	if (scene->HasAnimations())
 	{
-		ProcessAnimation(scene, bones);
+		//ProcessAnimation(scene, bones,ONE_OFF,"Base");
 	}
 	
 	
 	ProcessNode(scene->mRootNode, scene,bones);
-
+	
 	
 	import.FreeScene();
+	
 	
 }
 
@@ -161,13 +208,14 @@ void Full_Model::ProcessNode(aiNode* node, const aiScene* scene,std::vector<aiBo
 		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
 		meshes.push_back(ProcessMesh(mesh, scene,bones));
 		meshes[i].mesh_transform = Assimp_MatrixConv(node->mTransformation,file_type);
-
+		
 	}
 	//Then do the same for each of its children
 	for (unsigned int i = 0; i < node->mNumChildren; ++i)
 	{
 		ProcessNode(node->mChildren[i], scene,bones);
 	}
+	
 }
 
 
@@ -346,7 +394,7 @@ void Full_Model::ProcessSkeleton(const aiScene* scene,std::vector<aiBone*> &bone
 
 
 //Process Animation..... This was convoluted, because of the way assimp has its data structure.
-void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &bones)
+void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &bones,Type_of_Animation type,std::string name)
 {
 	//Go through each animation
 	for (unsigned int k = 0; k < scene->mNumAnimations; ++k)
@@ -367,18 +415,21 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 		{
 			//Which bone it is
 			int bone_index = this->skeleton.Search(scene->mAnimations[k]->mChannels[j]->mNodeName.C_Str());
-			
+			std::cout << "Bone_Index" << bone_index << std::endl;
+			std::cout << scene->mAnimations[k]->mChannels[j]->mNodeName.C_Str() << std::endl;
 			//Collection of key frames for this specific bone, for this specific animation
 			std::vector<JointPose> bone_keys;
 
 			//Check to make sure this bone is actually in the skeleton structure (it might be a biped system bone)
 			if (bone_index != -1)
 			{
+				
 				//Go through each of the key frames for this bone
 				for (unsigned int i = 0; i < scene->mAnimations[k]->mChannels[j]->mNumPositionKeys; ++i)
 				{
+					std::cout << "BIPDEDK" << std::endl;
 					//Basic information for Joint pose
-					Quarternion quat;
+					Quaternion quat;
 					glm::vec3 pos;
 					glm::vec3 scale;
 
@@ -408,22 +459,28 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 		// set up the skeleton poses for each keyframes
 		for (unsigned int u = 0; u < scene->mAnimations[k]->mChannels[0]->mNumPositionKeys; ++u)		//# of keyframes for this animation
 		{
-			
+			std::cout << "ANIMATION" << k << std::endl;
+			std::cout << scene->mAnimations[k]->mChannels[0]->mNumPositionKeys << std::endl;
 			//collection of joint poses for a specific key frame
 			std::vector<JointPose> poses;
-
+			
 			for (unsigned int t = 0; t < skeleton.JointCount; ++t)
 			{
+				std::cout <<u<<std::endl;
+				std::cout << t << std::endl;
 				poses.push_back(Coll_joint_poses[t][u]);			//Go through each bone (t parameter) and pick the keyframe (u parameter)
+				
 			}
 			//skeleton keyframe
 			SkeletonPose keyframe(skeleton, poses);
 			key_frames.push_back({ keyTimes[u],keyframe });
 		}
-
+		
 		//Put the new collection of keyframes as a animation in to the data for model
-		Animation temp(scene->mAnimations[k]->mName.C_Str(), this->skeleton, key_frames, ONE_OFF);
-		this->Animations[scene->mAnimations[k]->mName.C_Str()]=temp;
+		Animation temp(scene->mAnimations[k]->mName.C_Str(), this->skeleton, key_frames, type);
+		//std::cout << scene->mAnimations[k]->mName.C_Str() << std::endl;
+		//this->Animations[scene->mAnimations[k]->mName.C_Str()]=temp;
+		this->Animations[name] = temp;
 		
 		
 	}

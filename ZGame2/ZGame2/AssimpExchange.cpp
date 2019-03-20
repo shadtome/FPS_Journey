@@ -63,9 +63,9 @@
  }
 
 
- Quarternion Assimp_QuatConv(aiQuaternion &quat)
+ Quaternion Assimp_QuatConv(aiQuaternion &quat)
 {
-	Quarternion result;
+	Quaternion result;
 
 	result.scalar = -quat.w;								//This is not right, check in the Quaternions for a explnation.  maybe the inverse function or conjuage messing it up
 	result.Vector = glm::vec3(quat.x, quat.z, -quat.y);		//The coordinate system from assimp is z-up, y-forward, and x-right.

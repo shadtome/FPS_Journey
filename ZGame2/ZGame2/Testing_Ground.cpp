@@ -33,58 +33,30 @@ void Testing_Ground(State &state)
 	//Texture 
 	Texture2D container_tex = ResourceManager::LoadTexture("/Users/Cody Tipton/Desktop/GIT/ZGame2/container.jpg", false, "Test");
 
-	//Full_Model arm("/Users/Cody Tipton/Desktop/GIT/Models/Coordinate/testing.dae", true, false);
-	Full_Model x_axis("/Users/Cody Tipton/Desktop/Git/Models/Coordinate/x.dae", false, true);
-	Full_Model y_axis("/Users/Cody Tipton/Desktop/Git/Models/Coordinate/y.dae", false, true);
-	Full_Model z_axis("/Users/Cody Tipton/Desktop/Git/Models/Coordinate/z.dae", false, true);
+	
 	Full_Model Crysis("/Users/Cody Tipton/Desktop/GIT/Models/Crysis/nanosuit.obj",false,true);
 	Full_Model Dummy2("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae",true,false);
+
+	
+	Dummy2.Import_Animation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae", LOOP, "run");
+	Dummy2.Import_Animation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player walk animation.dae", LOOP,"walk");
 	//Full_Model Dummy("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/free3Dmodel.dae", true,false);
 
 
-	Dummy2.Animations.begin()->second.Type = LOOP;
 	
-	
+	Animator testing2(Dummy2.skeleton, (++Dummy2.Animations.begin())->second);
 	Animator testing(Dummy2.skeleton, Dummy2.Animations.begin()->second);
-	Animation hmmm= Dummy2.Animations.begin()->second;
+	
 	testing.Start_Animation();
-
-	std::vector<JointPose> poses;
-
-	/*for (unsigned int k = 0; k < Dummy.skeleton.JointCount; ++k)
-	{
-		glm::mat4 mat;
-		//JointPose temp(glm::inverse(Dummy.skeleton.Vector_Joints[k].M_invBindPose),Dummy.skeleton.Vector_Joints[k]);
-		JointPose temp(mat, Dummy.skeleton.Vector_Joints[k]);
-		poses.push_back(temp);
-
-	}
-	SkeletonPose test(Dummy.skeleton, poses);
-
-	std::vector<glm::mat4> matrices;
-
-	test.Setup_Pose_Local();
-
-	matrices = test.Global_Poses;
-	*/
-
-	std::vector<JointPose> poses2;
-
-	for (unsigned int k = 0; k < Dummy2.skeleton.JointCount; ++k)
-	{
-		glm::mat4 mat;
-		JointPose temp(glm::inverse(Dummy2.skeleton.Vector_Joints[k].M_invBindPose),Dummy2.skeleton.Vector_Joints[k]);
-		//JointPose temp(mat, Dummy2.skeleton.Vector_Joints[k]);
-		poses2.push_back(temp);
-		
-	}
-	SkeletonPose test2(Dummy2.skeleton, poses2);
+	testing2.Start_Animation();
 	
-	std::vector<glm::mat4> matrices2;
+
 	
-	test2.Setup_Pose_Local();
+	SyncAnim syn;
+	syn.Insert(Dummy2.Animations["walk"]);
+	syn.Insert(Dummy2.Animations["run"]);
+	syn.Start_Animation();
 	
-	matrices2 = test2.Global_Poses;
 	
 	
 	
@@ -105,7 +77,7 @@ void Testing_Ground(State &state)
 
 	
 
-	testing.Start_Animation();
+	
 
 	while (!glfwWindowShouldClose(Viewer::Window) && state==TEST)
 	{
@@ -128,12 +100,13 @@ void Testing_Ground(State &state)
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
-
+			syn.Change_Blend_Ratio(.01);
 
 			world.components.E_Model.Data[0].pos.x += walk;
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_LEFT) == GLFW_PRESS)
 		{
+			syn.Change_Blend_Ratio(-.01);
 			world.components.E_Model.Data[0].pos.x -= walk;
 			//Blend_Coords = walk_Idle.Animate_State(walk);
 		}
@@ -151,7 +124,8 @@ void Testing_Ground(State &state)
 		
 
 		std::vector<glm::mat4> cody = testing.Animate(Viewer::deltaTime);
-
+		std::vector<glm::mat4> cody2 = testing2.Animate(Viewer::deltaTime);
+		std::vector<glm::mat4> cody3 = syn.Animate(Viewer::deltaTime);
 		/*for (unsigned int k = 0; k < cody.size(); ++k)
 		{
 			for (unsigned int j = 0; j < 4; ++j)
@@ -163,12 +137,11 @@ void Testing_Ground(State &state)
 
 		
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
-		//x_axis.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 0.0), Nano);
-		//y_axis.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 0.0), Nano);
-		//z_axis.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 0.0), Nano);
+		Dummy2.Draw(Viewer::Projection, Viewer::View, glm::vec3(-4.0, 4.0, 0.0), Nano, cody3);
 		Crysis.Draw(Viewer::Projection,Viewer::View,glm::vec3(0.0,0.0,0.0),Nano);
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
 		Dummy2.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 0.0), Nano,cody);
+		Dummy2.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 4.0), Nano, cody2);
 		//Dummy.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 0.0), Nano, matrices);
 
 		//Change_Position

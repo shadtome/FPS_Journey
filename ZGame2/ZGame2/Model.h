@@ -54,6 +54,11 @@ public:
 	//Functions
 	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader,std::vector<glm::mat4> &joint_transforms);
 	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader);
+
+	//Import More Animations for this model
+	//Should we save the bones so we dont have to keep making them, but after the animations are loaded in, there is no point in saving this bone orders
+	void Import_Animation(std::string file, Type_of_Animation type,std::string name);
+
 private:
 	std::vector<Texture> textures_loaded;		//stores all the textures loaded so far, so we don't load in the same texture twice
 	//Model Data
@@ -83,7 +88,7 @@ private:
 	*/
 	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene,std::vector<aiBone*> &bones);		//Translate iaMesh to a Mesh object that we defined
 
-	void ProcessAnimation(const aiScene* &scene,std::vector<aiBone*> &bones);
+	void ProcessAnimation(const aiScene* &scene,std::vector<aiBone*> &bones,Type_of_Animation type,std::string name);
 
 	/*Process the material textures
 	*/

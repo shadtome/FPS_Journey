@@ -2,7 +2,7 @@
 
 
 
-Quarternion::Quarternion(float a_1, float a_2, float a_3, float angle)
+Quaternion::Quaternion(float a_1, float a_2, float a_3, float angle)
 {
 	this->Angle = angle;
 	float norm_vector = pow(a_1, 2) + pow(a_2, 2) + pow(a_3, 2); //Avoid squareroot if we dont need it
@@ -28,7 +28,7 @@ Quarternion::Quarternion(float a_1, float a_2, float a_3, float angle)
 
 }
 
-Quarternion::Quarternion(std::vector<float> vector, float angle)
+Quaternion::Quaternion(std::vector<float> vector, float angle)
 {
 	float norm_vector = pow(vector[0], 2) + pow(vector[1], 2) + pow(vector[2], 2);
 	if (norm_vector == 1)
@@ -78,14 +78,13 @@ Quarternion::Quarternion(std::vector<float> vector, float angle)
 }*/
 
 
-Quarternion::Quarternion(glm::vec3 vector, float scalar)
+Quaternion::Quaternion(glm::vec3 vector, float scalar)
 {
 	this->Vector = vector;
 	this->scalar;
-	Norm();
 }
 
-Quarternion::Quarternion()
+Quaternion::Quaternion()
 {
 	this->scalar = 1;
 
@@ -95,14 +94,14 @@ Quarternion::Quarternion()
 	}
 }
 
-float Quarternion::Norm() const
+float Quaternion::Norm() const
 {
 	return sqrt(pow(this->scalar, 2) + pow(this->Vector[0], 2) + pow(this->Vector[1], 2) + pow(this->Vector[2], 2));
 }
 
-Quarternion Quarternion::operator*(const Quarternion &other) const
+Quaternion Quaternion::operator*(const Quaternion &other) const
 {
-	Quarternion result;
+	Quaternion result;
 	result.scalar = other.scalar*scalar - Dot(other.Vector, Vector); //Set the scalar part
 	glm::vec3 cross_prod = Cross_prod(other.Vector, Vector);
 
@@ -115,9 +114,9 @@ Quarternion Quarternion::operator*(const Quarternion &other) const
 }
 
 
-Quarternion Quarternion::operator+(Quarternion other) const
+Quaternion Quaternion::operator+(Quaternion other) const
 {
-	Quarternion result;
+	Quaternion result;
 	result.Vector = this->Vector + other.Vector;  //Note that this is not unit anymore, i might just normalize this anyways, we will see
 	result.scalar = this->scalar + other.scalar;
 
@@ -125,23 +124,23 @@ Quarternion Quarternion::operator+(Quarternion other) const
 }
 
 
-Quarternion Quarternion::operator*(const float scale) const
+Quaternion Quaternion::operator*(const float scale) const
 {
-	Quarternion result;
+	Quaternion result;
 	result.Vector = scale * this->Vector;
 	result.scalar = scale * this->scalar;
 	return result;
 }
 
-Quarternion Quarternion::Invert()
+Quaternion Quaternion::Invert()
 {
-	Quarternion temp;
+	Quaternion temp;
 	temp.Vector =-this->Vector;
 	temp.scalar = this->scalar;
 	return temp;
 }
 
-glm::mat3 Quarternion::Matrix_Rep() const
+glm::mat3 Quaternion::Matrix_Rep() const
 {
 	glm::mat3 result;
 	// the matrix representation of a Quarternion assuming we have unit norm
@@ -150,10 +149,10 @@ glm::mat3 Quarternion::Matrix_Rep() const
 }
 
 
-glm::vec3 Quarternion::Conjugation(glm::vec3 &vector) const
+glm::vec3 Quaternion::Conjugation(glm::vec3 &vector) const
 {
-	Quarternion temp_quat;
-	Quarternion Inverse;
+	Quaternion temp_quat;
+	Quaternion Inverse;
 	//Inverse Scalar
 	Inverse.Vector = -Vector;
 	Inverse.scalar = scalar;
@@ -187,7 +186,7 @@ glm::vec3 sgn(const glm::vec3 vector)
 	}
 }
 
-float Arg(const Quarternion quat)
+float Arg(const Quaternion quat)
 {
 	float norm = quat.Norm();
 	if (norm == 0)
@@ -200,9 +199,9 @@ float Arg(const Quarternion quat)
 	}
 }
 
-Quarternion exp(const Quarternion quat)
+Quaternion exp(const Quaternion quat)
 {
-	Quarternion result;
+	Quaternion result;
 	result.Vector = exp(quat.scalar)*(float)sin(Norm(quat.Vector))*sgn(quat.Vector);
 	result.scalar = exp(quat.scalar)*(cos(Norm(quat.Vector))*quat.scalar);					//exp(a)*(cos(1.0)+sin(1.0) a)
 
@@ -211,15 +210,15 @@ Quarternion exp(const Quarternion quat)
 	return result;
 }
 
-Quarternion Ln(const Quarternion quat)
+Quaternion Ln(const Quaternion quat)
 {
-	Quarternion result;
+	Quaternion result;
 	result.Vector = sgn(quat.Vector)*Arg(quat);
 	result.scalar = log(quat.Norm());
 	return result;
 }
 
-Quarternion Pow(const Quarternion quat,const float w)
+Quaternion Pow(const Quaternion quat,const float w)
 {
 	return exp(Ln(quat)*w);
 }

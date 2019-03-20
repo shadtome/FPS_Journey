@@ -3,7 +3,7 @@
 
 JointPose Lerp(float &beta, JointPose joint1, JointPose joint2,Skeleton& skeleton)
 {
-	Quarternion temp_quat;
+	Quaternion temp_quat;
 	glm::vec3 temp_pos;
 
 	//look at (1-beta) PoseJoint[k-1]+beta(PoseJoint[k]
@@ -20,7 +20,7 @@ JointPose Lerp(float &beta, JointPose joint1, JointPose joint2,Skeleton& skeleto
 JointPose Slerp(float &beta, JointPose joint1, JointPose joint2,Skeleton& skeleton)
 {
 	//Temporary quarternions/Pos
-	Quarternion temp_quat;
+	Quaternion temp_quat;
 	glm::vec3 temp_pos;
 	float angle = acos(glm::dot(joint2.Rot_Quat.Vector, joint1.Rot_Quat.Vector));
 	

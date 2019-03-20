@@ -8,7 +8,7 @@
 
 class SyncAnim
 {
-public:
+private:
 	std::vector<Animator>	List_Anim;			//List of animations
 
 	float Blend_Ratio;							//Blend ratio to blend between which two neighboring animations
@@ -21,8 +21,10 @@ public:
 
 	std::vector<float> Playback_Speed;			//Playback speed for each animation.  These are based on the relationship between neighboring animations
 
+public:
 	//Constructors
 	SyncAnim();
+	
 
 	//DataStructure Methods
 	void Insert(Animation anim);				//Order Matters, meaning 0th animation is the first, and so on

@@ -1,6 +1,9 @@
 
 #include "SyncFade.h"
 
+
+//Make sure to document this code, since there is no information here
+
 SyncAnim::SyncAnim()
 {
 
@@ -13,6 +16,8 @@ void SyncAnim::Insert(Animation anim)
 	if (this->List_Anim.size() > 1)
 	{
 		this->Playback_Speed.push_back(1 - this->List_Anim.back().End_Time / this->List_Anim[this->List_Anim.size() - 2].End_Time);
+		std::cout << "Animation Time" << anim.KeyFrames.front().first <<"::"<< anim.KeyFrames.back().first << std::endl;
+		std::cout << "CALCULATION" << 1 - this->List_Anim.back().End_Time / this->List_Anim[this->List_Anim.size() - 2].End_Time << std::endl;
 	}
 	else
 	{
@@ -23,7 +28,7 @@ void SyncAnim::Insert(Animation anim)
 
 std::vector<glm::mat4> SyncAnim::Animate(float &deltatime)
 {
-	this->List_Anim[0].Current_Anim_Time += this->Speed *2*deltatime;		//Set the first animation and change its current animation time
+	this->List_Anim[0].Current_Anim_Time += this->Speed *deltatime;		//Set the first animation and change its current animation time
 
 	if (this->List_Anim[0].Current_Anim_Time > this->List_Anim[0].End_Time)
 	{

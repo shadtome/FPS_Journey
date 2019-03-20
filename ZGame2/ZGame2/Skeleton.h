@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
+#include <string>
 #include "Quaternion.h"
 
 //Forward Deceleration for classes
@@ -21,7 +22,7 @@ struct Joint
 public:
 	glm::mat4 M_invBindPose;  // Inverse bind pose transform
 
-	const char* Name;  // Name of the joint
+	std::string Name;  // Name of the joint
 
 	unsigned int ID;    // just the name of the joint, might just use a ID
 
@@ -55,7 +56,7 @@ public:
 	* Search through the joints for the joint that has the specified name
 	* and out puts the index in the vector for this joint
 	*/
-	int Search(const char* name);
+	int Search(std::string name);
 
 };
 
@@ -63,7 +64,7 @@ public:
 class JointPose
 {
 public:
-	Quarternion Rot_Quat; // Rotation Unit Quaternion
+	Quaternion Rot_Quat; // Rotation Unit Quaternion
 
 	glm::vec3 Pos_in_Parent; //Position of this joint in its parent's coordinate system
 
@@ -79,8 +80,8 @@ public:
 
 	//Constructor
 	JointPose(glm::mat4 local_transform, Joint &joint);
-	JointPose(Quarternion &rot_quat, glm::vec3 &pos_in_parent,glm::vec3 &scale, Joint &joint,Skeleton &skeleton);
-	JointPose(Quarternion &rot_quat, glm::vec3 &pos_in_parent, Joint &joint,Skeleton &skeleton);
+	JointPose(Quaternion &rot_quat, glm::vec3 &pos_in_parent,glm::vec3 &scale, Joint &joint,Skeleton &skeleton);
+	JointPose(Quaternion &rot_quat, glm::vec3 &pos_in_parent, Joint &joint,Skeleton &skeleton);
 
 	
 	//Methods

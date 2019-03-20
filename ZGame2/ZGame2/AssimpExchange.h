@@ -23,7 +23,7 @@
 
 /* Transfer the Assimp Quaternion to the my Quaternion class
 */
- Quarternion Assimp_QuatConv(aiQuaternion &quat);
+ Quaternion Assimp_QuatConv(aiQuaternion &quat);
 
 
 /* Transform the Assimp vectors to glm vec3

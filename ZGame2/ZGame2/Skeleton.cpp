@@ -19,11 +19,11 @@ Skeleton::Skeleton(std::vector<Joint> &joints)
 	
 }
 
-int Skeleton::Search(const char* name)
+int Skeleton::Search(std::string name)
 {
 	for (unsigned int k = 0; k < this->JointCount; ++k)
 	{
-		if (strcmp(name,this->Vector_Joints[k].Name)==0)
+		if (name.compare(this->Vector_Joints[k].Name)==0)
 		{
 			return k;
 		}
@@ -38,7 +38,7 @@ int Skeleton::Search(const char* name)
 //-----------------------------------------------------------------------------
 //JointPose Methods
 
-JointPose::JointPose(Quarternion &rot_quat, glm::vec3 &pos_in_parent,glm::vec3 &scale, Joint &joint,Skeleton &skeleton)
+JointPose::JointPose(Quaternion &rot_quat, glm::vec3 &pos_in_parent,glm::vec3 &scale, Joint &joint,Skeleton &skeleton)
 {
 	this->Rot_Quat = rot_quat;
 	this->Pos_in_Parent = pos_in_parent;
@@ -47,7 +47,7 @@ JointPose::JointPose(Quarternion &rot_quat, glm::vec3 &pos_in_parent,glm::vec3 &
 	
 }
 
-JointPose::JointPose(Quarternion &rot_quat, glm::vec3 &pos_in_parent, Joint &joint,Skeleton &skeleton)
+JointPose::JointPose(Quaternion &rot_quat, glm::vec3 &pos_in_parent, Joint &joint,Skeleton &skeleton)
 {
 	this->Rot_Quat = rot_quat;
 	this->Pos_in_Parent = pos_in_parent;

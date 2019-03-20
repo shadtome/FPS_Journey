@@ -165,7 +165,7 @@ SkeletonPose Animator::Blend_Pose(float deltatime, Animator &other)
 		//JointPose temp = Lerp(beta, original[j], other_JP[j]);
 		JointPose temp = Slerp(beta, original.Poses_Joints[j], other_JP.Poses_Joints[j],*this->pskeleton);
 		Temp_Pose.push_back(temp);
-		std::cout << "LOOK IN ANIMATION CPP FILE AND BLEND POSE TO MAKE SURE THIS WORKS" << std::endl;
+		//std::cout << "LOOK IN ANIMATION CPP FILE AND BLEND POSE TO MAKE SURE THIS WORKS" << std::endl;
 
 	}
 	
