@@ -5,6 +5,10 @@
 #include "Skeleton.h"
 #include "Quaternion.h"
 
+//Forward Declare 
+class SyncAnim;
+
+
 enum Type_of_Animation											//Types of animation, like a looping animation or not
 {
 	LOOP,
@@ -37,6 +41,10 @@ struct Animation
 
 class Animator
 {
+
+	friend SyncAnim;
+
+
 public:
 	Skeleton* pskeleton; //Pointer to skeleton this is associated to
 

@@ -74,6 +74,9 @@ void JointPose::Compile_Transform()
 	temp = temp* glm::mat4(this->Rot_Quat.Matrix_Rep()); 
 	temp = glm::scale(temp, this->scale);
 
+	
+
+
 	this->Total_transform = temp;
 }
 
@@ -103,6 +106,13 @@ SkeletonPose::SkeletonPose(Skeleton &skeleton, std::vector<JointPose> jointposes
 	//Input the data
 	this->pSkeleton = &skeleton;
 	this->Poses_Joints = jointposes;
+}
+
+
+//Copy Constructor(keeps the same pointer to skeleton)
+SkeletonPose::SkeletonPose(const SkeletonPose &other):Global_Poses(other.Global_Poses),Poses_Joints(other.Poses_Joints),pSkeleton(other.pSkeleton)
+{
+
 }
 
 

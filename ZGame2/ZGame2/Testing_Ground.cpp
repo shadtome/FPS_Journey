@@ -122,15 +122,19 @@ void Testing_Ground(State &state)
 		
 		
 		
-
+		
 		std::vector<glm::mat4> cody = testing.Animate(Viewer::deltaTime);
+		
 		std::vector<glm::mat4> cody2 = testing2.Animate(Viewer::deltaTime);
+		
 		std::vector<glm::mat4> cody3 = syn.Animate(Viewer::deltaTime);
-		/*for (unsigned int k = 0; k < cody.size(); ++k)
+		
+		/*
+		for (unsigned int k = 0; k < cody3.size(); ++k)
 		{
 			for (unsigned int j = 0; j < 4; ++j)
 			{
-				std::cout << cody[k][0][j] << "::" << cody[k][1][j] << "::" << cody[k][2][j] << "::" << cody[k][3][j] << "::" << std::endl;
+				std::cout << cody3[k][0][j] << "::" << cody3[k][1][j] << "::" << cody3[k][2][j] << "::" << cody3[k][3][j] << "::" << std::endl;
 			}
 		}*/
 		

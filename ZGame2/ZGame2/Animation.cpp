@@ -85,6 +85,7 @@ SkeletonPose Animator::New_Pose()
 
 std::vector<glm::mat4> Animator::Animate(float &deltatime)
 {
+	//std::cout << this->Current_Anim_Time << std::endl;
 	if (this->Animating)										//Is this animating?
 	{
 		this->Current_Anim_Time += deltatime;					//iterate the current animation time
@@ -166,9 +167,7 @@ SkeletonPose Animator::Blend_Pose(float deltatime, Animator &other)
 		JointPose temp = Slerp(beta, original.Poses_Joints[j], other_JP.Poses_Joints[j],*this->pskeleton);
 		Temp_Pose.push_back(temp);
 		//std::cout << "LOOK IN ANIMATION CPP FILE AND BLEND POSE TO MAKE SURE THIS WORKS" << std::endl;
-
 	}
-	
 	
 	
 	return SkeletonPose(*this->pskeleton,Temp_Pose);
@@ -225,14 +224,17 @@ std::vector<glm::mat4>Animator::Blend_Animate(float &deltatime,Animator other)
 std::vector<glm::mat4> JointPoses_To_JointTransforms(SkeletonPose skeletonpose)
 {
 	std::vector<glm::mat4> New_Inter_Global_Tran;
-
+	
 	for (unsigned int k = 0; k < skeletonpose.Poses_Joints.size(); ++k)			//Make sure to compile each Jointpose's Matrix transform.
 	{
 		skeletonpose.Poses_Joints[k].Compile_Transform();
+
 	}
 	
 	
 	skeletonpose.Setup_Pose();
+	
 	New_Inter_Global_Tran = skeletonpose.Global_Poses;
+
 	return New_Inter_Global_Tran;
 }

@@ -145,6 +145,7 @@ glm::mat3 Quaternion::Matrix_Rep() const
 	glm::mat3 result;
 	// the matrix representation of a Quarternion assuming we have unit norm
 	result = glm::mat3(glm::vec3(1 - 2 * pow(Vector.y, 2) - 2 * pow(Vector.z, 2), 2 * Vector.x*Vector.y - 2 * Vector.z*scalar, 2 * Vector.x*Vector.z + 2 * Vector.y*scalar), glm::vec3(2 * Vector.x*Vector.y + 2 * Vector.z*scalar, 1 - 2 * pow(Vector.x, 2) - 2 * pow(Vector.z, 2), 2 * Vector.y*Vector.z - 2 * Vector.x*scalar), glm::vec3(2 * Vector.x*Vector.z - 2 * Vector.y*scalar, 2 * Vector.y*Vector.z + 2 * Vector.x*scalar, 1 - 2 * pow(Vector.x, 2) - 2 * pow(Vector.y, 2)));
+
 	return result;
 }
 

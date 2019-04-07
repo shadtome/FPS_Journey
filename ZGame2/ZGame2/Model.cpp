@@ -415,8 +415,8 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 		{
 			//Which bone it is
 			int bone_index = this->skeleton.Search(scene->mAnimations[k]->mChannels[j]->mNodeName.C_Str());
-			std::cout << "Bone_Index" << bone_index << std::endl;
-			std::cout << scene->mAnimations[k]->mChannels[j]->mNodeName.C_Str() << std::endl;
+			
+			
 			//Collection of key frames for this specific bone, for this specific animation
 			std::vector<JointPose> bone_keys;
 
@@ -459,15 +459,13 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 		// set up the skeleton poses for each keyframes
 		for (unsigned int u = 0; u < scene->mAnimations[k]->mChannels[0]->mNumPositionKeys; ++u)		//# of keyframes for this animation
 		{
-			std::cout << "ANIMATION" << k << std::endl;
-			std::cout << scene->mAnimations[k]->mChannels[0]->mNumPositionKeys << std::endl;
+			
 			//collection of joint poses for a specific key frame
 			std::vector<JointPose> poses;
 			
 			for (unsigned int t = 0; t < skeleton.JointCount; ++t)
 			{
-				std::cout <<u<<std::endl;
-				std::cout << t << std::endl;
+				
 				poses.push_back(Coll_joint_poses[t][u]);			//Go through each bone (t parameter) and pick the keyframe (u parameter)
 				
 			}

@@ -21,6 +21,9 @@ If the model has a skeleton, it imports that as well, includeing all the inverse
 in the process of find the total transforms of the joints.
 
 If the model has animations as well, this imports these as well, and holds the data in this class
+with a name associated with it.
+
+MAKE SURE TO CHANGE THE IMPORT ANIMATION FOR FBX, since FBX actually saves all the animations for it, while Collada does not.
 
 
 

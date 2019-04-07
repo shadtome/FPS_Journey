@@ -11,15 +11,12 @@ class SyncAnim
 private:
 	std::vector<Animator>	List_Anim;			//List of animations
 
-	float Blend_Ratio;							//Blend ratio to blend between which two neighboring animations
+	float Blend_Ratio=0.0;							//Blend ratio to blend between which two neighboring animations
 
-	float Blend_Partition=0;						//Which blend partition it is in, where we partitioned the interval [0,n-1]
+	float Blend_Partition=1;						//Which blend partition it is in, where we partitioned the interval [0,n-1]
 
 	float Speed = 1.0;							//How fast the root animation goes, which changes the children animations
 
-	std::vector<float> Blend_Param;				//Blend parameters between neigbhoring animations
-
-	std::vector<float> Playback_Speed;			//Playback speed for each animation.  These are based on the relationship between neighboring animations
 
 public:
 	//Constructors

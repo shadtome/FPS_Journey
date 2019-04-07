@@ -116,6 +116,8 @@ public:
 	SkeletonPose();
 	SkeletonPose(Skeleton &skeleton, std::vector<JointPose> jointposes);
 	SkeletonPose(Skeleton &skeleton, std::vector<glm::mat4> local_transforms);
+	//Copy Constructor(keeps the same pointer to skeleton)
+	SkeletonPose(const SkeletonPose &other);
 
 	//Methods
 	void Setup_Pose();
