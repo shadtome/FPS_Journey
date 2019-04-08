@@ -14,6 +14,8 @@
 #include "Grid_Col.h"
 
 
+//CHANGE THIS WITH ITERATORS FOR EACH OF THE COMPONENTS TO MAKE IT EASIER!!!!!!! note to my self
+
 //This is the entity manager, that keeps track of all entities in the game, that is represented by a unique ID.  
 //For example, a zombie, is represetned as a unique ID
 
@@ -31,7 +33,7 @@ class
 {
 public:
 	//Collection of all the Entities
-	std::map<unsigned int, Attributes> World;
+	std::map<unsigned int, IEntity> World;
 
 	// Class that holds all the data for the components for each Entity
 	Component_Manager components;
@@ -46,17 +48,20 @@ public:
 	//Constructor
 
 	// Create Entities and puts the unsigned int in to the world vector
-	void Create_Entity();
+	IEntity* Create_Entity();
 	//Destry Entity
 	void Destroy_Entity(IEntity &entity); // Need a good way to destroy entities in a efficient Manner
 	//INclude Entity
-	void Include_Entity(IEntity &entity, Attributes &attributes);
+	IEntity* Include_Entity(IEntity &entity);
 
 	//Check if the Entity Already exists
 	bool Check_Exist(IEntity &entity);
 	//----------------------------------
 	// Get options for this Entity
 	bool Get_Options(IEntity &entity, Comp_Mask component);
+	//Check if option is turned on for this Entity
+	bool Is_Opt_On(IEntity &entity,Options opt);
+	bool Is_Opt_On(unsigned int &ID, Options opt);
 	//---------------------------------
 	// Input Data for the Entities
 	void Input_Data(IEntity &entity, const char* inputpath); // Need a way to import information from a file to make things easier
@@ -65,6 +70,9 @@ public:
 	//This is to import the information about the Collision data
 	void Input_Col(IEntity &entity, Collision col);
 
+	//----------------------------------------
+	//Update Functions
+	void Update_Animation(unsigned int &ID, SkeletonPose &pose);
 
 
 	//Activate the world (draw, collision, animate ect...)

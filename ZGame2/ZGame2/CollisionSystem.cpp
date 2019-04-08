@@ -5,7 +5,7 @@
 
 
 
-// Construct the AABB and the boudning spheres given model Data.
+/*// Construct the AABB and the boudning spheres given model Data.
 void Setup_Collision(Model &model, Collision &col)
 {
 	int skip = 0;
@@ -29,7 +29,7 @@ void Setup_Collision(Model &model, Collision &col)
 		points.push_back(new_point.x);
 		points.push_back(new_point.y);
 		points.push_back(new_point.z);
-		*/
+		//there should be a "* "/" here
 
 		points.push_back(model.scale[0] * model.Vertices[skip*k]);
 		points.push_back(model.scale[1] * model.Vertices[skip*k + 1]);
@@ -43,6 +43,31 @@ void Setup_Collision(Model &model, Collision &col)
 	col.Original_Pos = col.box.Center; // Sets the Original Position in local coordinates
 	col.points = points;
 
+}*/
+
+//Set up collision Data
+void Setup_Collision(Model &model, Collision &col)
+{
+	//Consists of the vertices
+	std::vector<float> points;
+
+	//Put together all the vertices for the model
+	//Later we can do some specific meshes of the mkodel collision
+	for (auto k=model.model.meshes.begin(); k!= model.model.meshes.end(); ++k)
+	{
+		for (auto v = k->vertices.begin(); v != k->vertices.end(); ++v)
+		{
+			points.push_back(v->Position.x);
+			points.push_back(v->Position.y);
+			points.push_back(v->Position.z);
+		}
+		
+		//Set up the collision data
+		col.box.ConstructAABB_Points(points); // Construct the AABB
+		col.sphere.CompileSphere(col.box); // Using the AABB, construct the Bounding Sphere
+		col.Original_Pos = col.box.Center; // Sets the Original Position in local coordinates
+		col.points = points;
+	}
 }
 
 //Update the collision for the objects

@@ -126,6 +126,7 @@
     <ClInclude Include="AnimationSystem.h" />
     <ClInclude Include="Animation_Manager.h" />
     <ClInclude Include="AssimpExchange.h" />
+    <ClInclude Include="Collection_Files_Animations.h" />
     <ClInclude Include="Component_Manager.h" />
     <ClInclude Include="ConfigureManager.h" />
     <ClInclude Include="IEntity.h" />
@@ -163,6 +164,7 @@
     <ClCompile Include="..\glad.cpp" />
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationState.cpp" />
+    <ClCompile Include="AnimationSystem.cpp" />
     <ClCompile Include="Animation_Manager.cpp" />
     <ClCompile Include="AssimpExchange.cpp" />
     <ClCompile Include="Attributes.cpp" />

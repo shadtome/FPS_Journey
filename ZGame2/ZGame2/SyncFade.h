@@ -28,6 +28,7 @@ public:
 
 	//methods
 	std::vector<glm::mat4> Animate(float &deltatime);	//Animate all the animations, takes as input the delta change of the animation time
+	SkeletonPose Animate_Pose(float &deltatime);
 
 	void Start_Animation();								//Start the animation
 

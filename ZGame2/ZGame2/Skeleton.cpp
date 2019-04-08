@@ -119,7 +119,7 @@ SkeletonPose::SkeletonPose(const SkeletonPose &other):Global_Poses(other.Global_
 
 
 
-void SkeletonPose::Setup_Pose()
+std::vector<glm::mat4> SkeletonPose::Setup_Pose()
 {
 
 	//Allocate enough memory for the number of joints
@@ -143,6 +143,8 @@ void SkeletonPose::Setup_Pose()
 		new_matrix = glm::inverse(this->pSkeleton->Root_Transform)* new_matrix* this->Poses_Joints[k].pJoint->M_invBindPose;	
 		this->Global_Poses.push_back(new_matrix);
 	}
+
+	return this->Global_Poses;
 }
 
 void SkeletonPose::Setup_Pose_Local()

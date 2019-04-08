@@ -6,8 +6,11 @@
 // Instantiate Static Variables
 std::map<std::string, Texture2D> ResourceManager::Textures;
 std::map<std::string, Shader> ResourceManager::Shaders;
+std::map<std::string, Full_Model> ResourceManager::Models;
 
 //Now lets actually define the methods of the Resource Manager class
+
+//Shaders
 Shader ResourceManager::LoadShader(const char* vShaderFile, const char* fShaderFile, std::string name)
 {
 	Shaders[name] = LoadShaderFromFile(vShaderFile, fShaderFile);
@@ -20,6 +23,7 @@ Shader ResourceManager::GetShader(std::string name)
 	return Shaders[name];
 }
 
+//Textures
 Texture2D ResourceManager::LoadTexture(const char* file, bool alpha, std::string name)
 {
 	Textures[name] = LoadTextureFromFile(file, alpha);
@@ -29,6 +33,23 @@ Texture2D ResourceManager::LoadTexture(const char* file, bool alpha, std::string
 Texture2D ResourceManager::GetTexture(std::string name)
 {
 	return Textures[name];
+}
+
+//Models
+Full_Model ResourceManager::LoadModel(std::string file,std::string name, bool hasskeleton, bool hastexture)
+{
+	Models[name] = Full_Model(file, hasskeleton, hastexture);
+	return Models[name];
+}
+
+Full_Model ResourceManager::GetModel(std::string name)
+{
+	return Models[name];
+}
+
+void ResourceManager::LoadAnimation(std::string file, Type_of_Animation type, std::string name_animation,std::string name_model)
+{
+	Models[name_model].Import_Animation(file, type, name_animation);
 }
 
 void ResourceManager::Clear()

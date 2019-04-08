@@ -24,6 +24,13 @@ public:
 	// Check if options are on or off
 	bool Is_Opt_On(Options option) const;
 
+	//Constructor
+	Attributes(Options options)
+	{
+		Options_Holder = options;
+	}
+	//Default Constructor
+	Attributes() {};
 };
 
 

@@ -36,7 +36,7 @@ void ChangeModel_Pos_World(Entity_Manager &world, float &deltatime)
 
 
 
-//Set VAO for the model
+/*//Set VAO for the model
 void Set_VAO(Model &model)
 {
 	// Generate a unique ID for the VAO
@@ -70,17 +70,27 @@ void Set_VAO(Model &model)
 	}
 	glBindVertexArray(0);
 	
+}*/
+
+
+
+
+
+//Draw Entity model
+void Draw_Entity(Model &Model, glm::mat4 &projection, glm::mat4 &view, glm::mat4 &model_M, Shader &shader)
+{
+	Model.model.Draw(projection, view,Model.pos , shader);		//Draw the entity using the Full_Model class and mesh
+}
+void Draw_Entity(Model &Model, glm::mat4 &projection, glm::mat4 &view, glm::mat4 &model_M, Shader &shader,SkeletonPose &pose)
+{
+	//Compile all the Quaternions in to matrices for final shipment in to the shader.
+	std::vector<glm::mat4> joint_transform = pose.Setup_Pose();
+	Model.model.Draw(projection, view, Model.pos, shader, joint_transform);
 }
 
 
 
-
-
-
-
-
-
-//Draw entity model
+/*//Draw entity model
 void Draw_Entity(Model &model,glm::mat4 &projection, glm::mat4 &view,glm::mat4 &model_matrix,Shader &shader)
 {
 	
@@ -117,10 +127,10 @@ void Draw_Entity(Model &model,glm::mat4 &projection, glm::mat4 &view,glm::mat4 &
 	}
 	//Unbind the current VAO
 	glBindVertexArray(0);
-}
+}*/
 
 
-
+/*
 //Set up all the VAO and graphics Data for a Entity_Manager world
 void Set_VAO_World(Entity_Manager &world)
 {
@@ -128,9 +138,9 @@ void Set_VAO_World(Entity_Manager &world)
 	{
 		Set_VAO(world.components.E_Model.Data[k]);
 	}
-}
+}*/
 
-//Draw all the assoctated enties in the E_Model component 
+/*//Draw all the assoctated enties in the E_Model component 
 void Draw_World(Entity_Manager &world,glm::mat4 &projection, glm::mat4 &view, Shader &shader)
 {
 	
@@ -169,7 +179,53 @@ void Draw_World(Entity_Manager &world,glm::mat4 &projection, glm::mat4 &view, Sh
 		}
 	}
 	shader.Stop();
-}
+}*/
 
+
+//Draw world
+void Draw_World(Entity_Manager &world, glm::mat4 &projection, glm::mat4 &view, Shader &shader)
+{
+	for (int k = 0; k < world.components.E_Model.Data.size(); ++k)
+	{
+		glm::mat4 model_matrix;
+
+		//Make the model matrix for this entitiy and map it from model coordinates to world coordinates.  Note that matrix mulplication by 
+		//these functions glm:: multiply on the right, so we need to pre compose
+		model_matrix = glm::translate(model_matrix, world.components.E_Model.Data[k].pos);
+		model_matrix = glm::scale(model_matrix, glm::vec3(world.components.E_Model.Data[k].scale[0], world.components.E_Model.Data[k].scale[1], world.components.E_Model.Data[k].scale[2]));
+		model_matrix = glm::rotate(model_matrix, world.components.E_Model.Data[k].angle, world.components.E_Model.Data[k].Vector_Rot);
+
+		if (world.Is_Opt_On(world.components.E_Model.Data[k].Entity_ID,ANIMATION))
+		{
+			Draw_Entity(world.components.E_Model.Data[k], projection, view, model_matrix, shader,world.components.E_Model.Data[k].Cur_Pose);
+		}
+		else
+		{
+			Draw_Entity(world.components.E_Model.Data[k], projection, view, model_matrix, shader);
+		}
+
+
+		//Set the New Center of the AABB and/ or Bounding Sphere
+		if (world.Is_Opt_On(world.components.E_Model.Data[k].Entity_ID,COLLISION))
+		{
+			//Reference to Collision data
+			int col_loc = world.components.E_Model.Data[k].Entity_Col_ID;
+
+			// Update the Collision Data
+			model_matrix = glm::mat4();
+			model_matrix = glm::translate(model_matrix, world.components.E_Model.Data[k].pos);
+
+			glm::vec3 original_pos = world.components.E_Col.Data[col_loc].Original_Pos; // Find the Original Position for the AABB
+
+			glm::vec3 cnewPos = glm::vec3(model_matrix*glm::vec4(original_pos, 1)); // Multiply the original position by the translation matrix from the translation of the model
+
+			world.components.E_Col.Data[col_loc].box.UpdateAABB(cnewPos); // Set new location for the center of the AABB
+			world.components.E_Col.Data[col_loc].sphere.Center = cnewPos; // Set new location for the center of the boudning sphere
+		}
+
+
+	}
+	shader.Stop();
+}
 
 #endif

@@ -12,6 +12,7 @@
 #include "stb_image.h" 
 #include "Shader.h"
 #include "Textures2D.h"
+#include "Model.h"
 #include <map>
 
 // A statics singleton ResourceManager class that hosts several
@@ -22,10 +23,13 @@
 
 class ResourceManager
 {
+	typedef std::string Name;
+	typedef std::string File_Path;
 public:
 	//Resource Storage
-	static std::map<std::string, Shader> Shaders;
-	static std::map<std::string, Texture2D> Textures;
+	static std::map<Name, Shader> Shaders;
+	static std::map<Name, Texture2D> Textures;
+	static std::map<Name, Full_Model> Models;
 
 	//Loads (and generates) a shader program from file loading vertex and fragment shader's source code.  
 	static Shader LoadShader(const char* vShaderFile, const char* fShaderFile, std::string name);
@@ -38,6 +42,16 @@ public:
 
 	//Retreive a stored Texture
 	static Texture2D GetTexture(std::string name);
+
+	//Load a Model from file
+	static Full_Model LoadModel(std::string file_path,std::string name, bool hasskeleton, bool hastexture);
+
+	//Retrieve a stored model
+	static Full_Model GetModel(std::string name);
+
+	//Import animation to certain Model
+	static void LoadAnimation(std::string file, Type_of_Animation type, std::string name_animation,std::string name_model);
+
 
 	//properly de-Allocate all loaded resources
 	static void Clear();

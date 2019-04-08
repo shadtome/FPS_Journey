@@ -120,7 +120,7 @@ public:
 	SkeletonPose(const SkeletonPose &other);
 
 	//Methods
-	void Setup_Pose();
+	std::vector<glm::mat4> Setup_Pose();
 	void Setup_Pose_Local();
 };
 

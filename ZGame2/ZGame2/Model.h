@@ -37,6 +37,7 @@ MAKE SURE TO CHANGE THE IMPORT ANIMATION FOR FBX, since FBX actually saves all t
 
 class Full_Model
 {
+	typedef std::string Name;
 public:
 
 	//Does this model have a skeleton
@@ -44,7 +45,7 @@ public:
 	bool HasTextures = false;
 
 	//List of animations
-	std::map<std::string,Animation> Animations;
+	std::map<Name,Animation> Animations;
 
 	//Skeleton Data
 	Skeleton skeleton;
@@ -52,7 +53,9 @@ public:
 
 	
 	//Constructor
-	Full_Model(std::string path,bool hasskeleton,bool hastexture);			
+	Full_Model(std::string path,bool hasskeleton,bool hastexture);
+	//Default constructor
+	Full_Model() {};
 
 	//Functions
 	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader,std::vector<glm::mat4> &joint_transforms);
@@ -60,12 +63,14 @@ public:
 
 	//Import More Animations for this model
 	//Should we save the bones so we dont have to keep making them, but after the animations are loaded in, there is no point in saving this bone orders
-	void Import_Animation(std::string file, Type_of_Animation type,std::string name);
+	void Import_Animation(std::string file, Type_of_Animation type,Name name);
 
-private:
-	std::vector<Texture> textures_loaded;		//stores all the textures loaded so far, so we don't load in the same texture twice
 	//Model Data
 	std::vector<Mesh> meshes;
+private:
+	std::vector<Texture> textures_loaded;		//stores all the textures loaded so far, so we don't load in the same texture twice
+	
+	
 	
 	std::string directory;
 	std::string file_type;

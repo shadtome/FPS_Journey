@@ -168,6 +168,9 @@
     <ClInclude Include="ConfigureManager.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Collection_Files_Animations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ZGame1Main.cpp">
@@ -253,6 +256,9 @@
     </ClCompile>
     <ClCompile Include="AssimpExchange.cpp">
       <Filter>Source Files\Models/Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationSystem.cpp">
+      <Filter>Source Files\Animation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

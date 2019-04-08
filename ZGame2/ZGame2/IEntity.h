@@ -2,10 +2,15 @@
 #define IENTITY_H
 
 
+
+class Entity_Manager;
+
 // Entities stuff
 //This is the Unique ID for a Entity
 class IEntity
 {
+	friend Entity_Manager;
+
 public:
 	unsigned int ID = 0; // This has 32 bits for use in bitmasking
 	//Name ID
@@ -18,6 +23,18 @@ public:
 	unsigned int Model_ID = 0;
 	// Collision ID
 	unsigned int Col_ID = 0;
+
+private:
+	//Attributes of this Entity
+	Attributes attributes;
+public:
+	//Default Constructor
+	IEntity() :attributes(0) {};
+	//Ordinatey constructor
+	IEntity(Options options)
+	{
+		attributes.Switch_Opt(options);
+	}
 };
 
 

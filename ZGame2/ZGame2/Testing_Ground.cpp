@@ -13,6 +13,7 @@
 #include "Levels.h"
 #include "SyncFade.h"
 #include "Model.h"
+#include "AnimationSystem.h"
 
 //Forward Deceleration
 
@@ -33,6 +34,10 @@ void Testing_Ground(State &state)
 	//Texture 
 	Texture2D container_tex = ResourceManager::LoadTexture("/Users/Cody Tipton/Desktop/GIT/ZGame2/container.jpg", false, "Test");
 
+	//Import Models and corresponding animations
+	ResourceManager::LoadModel("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae", "DUMMY", true, false);
+	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae", LOOP, "run", "DUMMY");
+	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player walk animation.dae", LOOP, "walk", "DUMMY");
 	
 	Full_Model Crysis("/Users/Cody Tipton/Desktop/GIT/Models/Crysis/nanosuit.obj",false,true);
 	Full_Model Dummy2("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae",true,false);
@@ -42,7 +47,8 @@ void Testing_Ground(State &state)
 	Dummy2.Import_Animation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player walk animation.dae", LOOP,"walk");
 	//Full_Model Dummy("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/free3Dmodel.dae", true,false);
 
-
+	//Spawn the DUMMY!
+	IEntity* dummy=Spawner(world, "DUMMY", glm::vec3(1.0, 0.0, 0.0), ANIMATION);
 	
 	Animator testing2(Dummy2.skeleton, (++Dummy2.Animations.begin())->second);
 	Animator testing(Dummy2.skeleton, Dummy2.Animations.begin()->second);
@@ -62,14 +68,6 @@ void Testing_Ground(State &state)
 	
 	
 	
-	// This is the testing with zombie boxes
-	for (int k = 1; k < 7; ++k)
-	{
-		Zombie_Create(world, container_tex, glm::vec3((float)k * 4, 0.0f, 0.0f));
-
-	}
-	
-	Zombie_Create(world, container_tex, glm::vec3(0.0, 10.0, 20.0));
 
 
 
@@ -89,26 +87,26 @@ void Testing_Ground(State &state)
 		//Move a box around
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_UP) == GLFW_PRESS)
 		{
-			//Jog.Change_Blend_Ratio(.01);
-			world.components.E_Model.Data[0].pos.y += walk;
+			
+			//world.components.E_Model.Data[0].pos.y += walk;
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		{
-			//Jog.Change_Blend_Ratio(-0.01);
+			
 	
-			world.components.E_Model.Data[0].pos.y -= walk;
+			//world.components.E_Model.Data[0].pos.y -= walk;
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
 			syn.Change_Blend_Ratio(.01);
 
-			world.components.E_Model.Data[0].pos.x += walk;
+			//world.components.E_Model.Data[0].pos.x += walk;
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_LEFT) == GLFW_PRESS)
 		{
 			syn.Change_Blend_Ratio(-.01);
-			world.components.E_Model.Data[0].pos.x -= walk;
-			//Blend_Coords = walk_Idle.Animate_State(walk);
+			//world.components.E_Model.Data[0].pos.x -= walk;
+			
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		{
@@ -128,7 +126,7 @@ void Testing_Ground(State &state)
 		std::vector<glm::mat4> cody2 = testing2.Animate(Viewer::deltaTime);
 		
 		std::vector<glm::mat4> cody3 = syn.Animate(Viewer::deltaTime);
-		
+		SkeletonPose cody4 = syn.Animate_Pose(Viewer::deltaTime);
 		/*
 		for (unsigned int k = 0; k < cody3.size(); ++k)
 		{
@@ -137,10 +135,10 @@ void Testing_Ground(State &state)
 				std::cout << cody3[k][0][j] << "::" << cody3[k][1][j] << "::" << cody3[k][2][j] << "::" << cody3[k][3][j] << "::" << std::endl;
 			}
 		}*/
-		
-
-		
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
+		world.Update_Animation(dummy->ID, cody4);
+		
+		
 		Dummy2.Draw(Viewer::Projection, Viewer::View, glm::vec3(-4.0, 4.0, 0.0), Nano, cody3);
 		Crysis.Draw(Viewer::Projection,Viewer::View,glm::vec3(0.0,0.0,0.0),Nano);
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
@@ -152,7 +150,7 @@ void Testing_Ground(State &state)
 		//Update everything
 		//ChangeModel_Pos_World(world,deltaTime); // Change the Pos of objects
 
-		Draw_World(world, Viewer::Projection, Viewer::View, Test);
+		Draw_World(world, Viewer::Projection, Viewer::View, Nano);
 		//Check_Col_World(world);
 
 		//Draw World

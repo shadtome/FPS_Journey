@@ -15,6 +15,9 @@
 #include "Attributes.h"
 #include "Collision.h"
 #include "Animation_Manager.h"
+#include "Model.h"
+#include "Animation.h"
+#include "IEntity.h"
 
 //Forward Deceleration
 class Texture2D;
@@ -90,7 +93,7 @@ enum Graphics_Options
 	LINES = 0b00001000
 };
 
-class Model
+/*class Model
 {
 public:
 	//Pointer back to the original Entity
@@ -147,16 +150,59 @@ public:
 
 
 
-};
+};*/
 
-//-------------------------------------------------
-// Animation
-
-class Animation_Component
+class Model
 {
-	Animation_Manager animations;				//Animation manager for the specific entity
-	Skeleton skeleton;
+	typedef std::string Name;
+public:
+	//References back to important components
+	//Reference Back tot he ID for the entity
+	unsigned int Entity_ID = 0;
+	//Reference back to the Velocity data it is associated with
+	unsigned int Entity_Vel_ID = 0;
+	// Reference back to Collision Data if it has it
+	unsigned int Entity_Col_ID = 0;
+
+private:
+	//Pointer to IEntity
+	IEntity* ptr;
+public:
+
+	Full_Model model;			//The imported model data/animation data/skeleton data/ textures data
+
+	std::map<Name,Animator> animators;		//Animators
+
+	//Current Collection of Joint Transforms for animations
+	SkeletonPose Cur_Pose;
+
+	//Information to change the model with respect to translation, rotation and scale
+	glm::vec3 pos;				// Model Position in the world coordinates
+	//scale of the model
+	float scale[3] = { 1,1,1 };
+
+	//Rotation information
+	//counter clockwise roation about the vector
+	float angle = 0;
+
+	glm::vec3 Vector_Rot = glm::vec3(0.0, 1.0, 0.0);
+
+	//Constructor
+	Model(Full_Model &Model, std::map<Name, Animator> Animators, glm::vec3 Pos)
+	{
+		this->model = Model;
+		this->animators = Animators;
+		this->pos = Pos;
+	}
+	//Overloaded Constructor
+	Model(Full_Model &Model, glm::vec3 Pos)
+	{
+		this->model = Model;
+		this->pos = Pos;
+	}
 };
+
+
 
 //-------------------------------------------------
 //Collision

@@ -47,6 +47,36 @@ std::vector<glm::mat4> SyncAnim::Animate(float &deltatime)
 
 }
 
+
+SkeletonPose SyncAnim::Animate_Pose(float &deltatime)
+{
+	this->List_Anim[0].Current_Anim_Time += this->Speed*deltatime;
+
+
+	//keep the animations looping and make sure they are synced correctly
+	if (this->List_Anim[0].Current_Anim_Time >= this->List_Anim[0].End_Time)
+	{
+		this->List_Anim[0].Start_Animation();
+	}
+
+
+	for (unsigned int k = 1; k < this->List_Anim.size(); ++k)	//Syn these animations together so they are on the same track
+	{
+		this->List_Anim[k].Current_Anim_Time = this->List_Anim[0].Current_Anim_Time*this->List_Anim[k].End_Time / this->List_Anim[0].End_Time;
+		//std::cout << this->List_Anim[0].Current_Anim_Time << std::endl;
+	}
+
+	for (unsigned int i = 0; i < List_Anim.size(); ++i)
+	{
+		//std::cout << "ANIMATION"<<i<<List_Anim[i].Current_Anim_Time << std::endl;
+		//std::cout << "ANIMATION TIME" << List_Anim[0].Current_Anim_Time << std::endl;
+		//std::cout << "END TIME" << List_Anim[i].End_Time << std::endl;
+	}
+
+	return this->New_Pose();
+}
+
+
 void SyncAnim::Start_Animation()
 {
 	for (unsigned int k = 0; k < this->List_Anim.size(); ++k)

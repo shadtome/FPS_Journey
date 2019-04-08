@@ -4,14 +4,13 @@
 
 //Source code for the functions of Entity_Manager
 
-void Entity_Manager::Create_Entity()
+IEntity* Entity_Manager::Create_Entity()
 {
 	IEntity temp;
-	Attributes temp_A;
 	temp.ID = LastID;
 	LastID += 1;
-	World[temp.ID] = temp_A;
-
+	World[temp.ID] = temp;
+	return &World[temp.ID];
 };
 
 void Entity_Manager::Destroy_Entity(IEntity &entity)
@@ -40,19 +39,20 @@ void Entity_Manager::Destroy_Entity(IEntity &entity)
 
 }
 
-void Entity_Manager::Include_Entity(IEntity &entity, Attributes &attributes)
+IEntity* Entity_Manager::Include_Entity(IEntity &entity)
 {
 	if (!Check_Exist(entity))
 	{
 		LastID += 1;
 		entity.ID = LastID;
 
-		World[entity.ID] = attributes;
+		World[entity.ID] = entity;
 	}
 	else
 	{
 		//std::cout << "The entity" << entity.ID << "(" << components.E_Name.Data[entity.Name_ID].name << ")" << " " << "already exists"<< std::endl;
 	}
+	return &World[entity.ID];
 };
 
 bool Entity_Manager::Check_Exist(IEntity &entity)
@@ -68,7 +68,17 @@ bool Entity_Manager::Check_Exist(IEntity &entity)
 
 bool Entity_Manager::Get_Options(IEntity &entity, Comp_Mask component)
 {
-	return World[entity.ID].Is_Opt_On(component);
+	return World[entity.ID].attributes.Is_Opt_On(component);
+}
+
+bool Entity_Manager::Is_Opt_On(IEntity &entity, Options opt)
+{
+	return World[entity.ID].attributes.Is_Opt_On(opt);
+}
+
+bool Entity_Manager::Is_Opt_On(unsigned int &ID, Options opt)
+{
+	return World[ID].attributes.Is_Opt_On(opt);
 }
 
 
@@ -100,6 +110,14 @@ void Entity_Manager::Input_Col(IEntity &entity, Collision col)
 	components.Input_Col(entity, col);
 
 }
+
+//-----------------------------------------
+//Update Functions
+void Entity_Manager::Update_Animation(unsigned int &ID, SkeletonPose &pose)
+{
+	components.E_Model.Data[World[ID].Model_ID].Cur_Pose = pose;
+}
+
 
 /*void Entity_Manager::Setup_Grid()
 {
