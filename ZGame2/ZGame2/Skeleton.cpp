@@ -110,7 +110,7 @@ SkeletonPose::SkeletonPose(Skeleton &skeleton, std::vector<JointPose> jointposes
 
 
 //Copy Constructor(keeps the same pointer to skeleton)
-SkeletonPose::SkeletonPose(const SkeletonPose &other):Global_Poses(other.Global_Poses),Poses_Joints(other.Poses_Joints),pSkeleton(other.pSkeleton)
+SkeletonPose::SkeletonPose(const SkeletonPose &other) :Global_Poses(other.Global_Poses), Poses_Joints(other.Poses_Joints), pSkeleton(other.pSkeleton)
 {
 
 }

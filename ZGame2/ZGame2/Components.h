@@ -169,7 +169,7 @@ private:
 	IEntity* ptr;
 public:
 
-	Full_Model model;			//The imported model data/animation data/skeleton data/ textures data
+	Full_Model* model;			//The imported model data/animation data/skeleton data/ textures data
 
 	std::map<Name,Animator> animators;		//Animators
 
@@ -188,18 +188,19 @@ public:
 	glm::vec3 Vector_Rot = glm::vec3(0.0, 1.0, 0.0);
 
 	//Constructor
-	Model(Full_Model &Model, std::map<Name, Animator> Animators, glm::vec3 Pos)
+	Model(Full_Model* &Model, std::map<Name, Animator> &Animators, glm::vec3 Pos)
 	{
 		this->model = Model;
 		this->animators = Animators;
 		this->pos = Pos;
 	}
 	//Overloaded Constructor
-	Model(Full_Model &Model, glm::vec3 Pos)
+	Model(Full_Model* &Model, glm::vec3 Pos)
 	{
 		this->model = Model;
 		this->pos = Pos;
 	}
+
 };
 
 

@@ -14,6 +14,7 @@
 #include "SyncFade.h"
 #include "Model.h"
 #include "AnimationSystem.h"
+#include "Blenders.h"
 
 //Forward Deceleration
 
@@ -40,37 +41,38 @@ void Testing_Ground(State &state)
 	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player walk animation.dae", LOOP, "walk", "DUMMY");
 	
 	Full_Model Crysis("/Users/Cody Tipton/Desktop/GIT/Models/Crysis/nanosuit.obj",false,true);
-	Full_Model Dummy2("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae",true,false);
+	
 
 	
-	Dummy2.Import_Animation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae", LOOP, "run");
-	Dummy2.Import_Animation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player walk animation.dae", LOOP,"walk");
+	
 	//Full_Model Dummy("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/free3Dmodel.dae", true,false);
 
 	//Spawn the DUMMY!
-	IEntity* dummy=Spawner(world, "DUMMY", glm::vec3(1.0, 0.0, 0.0), ANIMATION);
+	IEntity* dummy=Spawner(world, "DUMMY", glm::vec3(-3.0, 4.0, 0.0), ANIMATION);
+	IEntity* dummy2 = Spawner(world, "DUMMY", glm::vec3(9.0, 0.0, 0.0), ANIMATION);
+
+	std::vector<IEntity*> dummies;
+	for (unsigned int k = 0; k < 2; ++k)
+	{
+		dummies.push_back(Spawner(world, "DUMMY", glm::vec3(3.0 + k, 0.0, 0.0), ANIMATION));
+	}
 	
-	Animator testing2(Dummy2.skeleton, (++Dummy2.Animations.begin())->second);
-	Animator testing(Dummy2.skeleton, Dummy2.Animations.begin()->second);
 	
-	testing.Start_Animation();
-	testing2.Start_Animation();
+	
 	
 
+
+	
+	
+	onedim_Blend blender;
+	blender.insert(world.access_model(dummy)->animators["walk"],0.0);
+	blender.insert(world.access_model(dummy)->animators["run"], 1.0);
+	blender.Start_Animation();
 	
 	SyncAnim syn;
-	syn.Insert(Dummy2.Animations["walk"]);
-	syn.Insert(Dummy2.Animations["run"]);
+	syn.Insert(ResourceManager::Models["DUMMY"].Animations["walk"]);
+	syn.Insert(ResourceManager::Models["DUMMY"].Animations["run"]);
 	syn.Start_Animation();
-	
-	
-	
-	
-	
-	
-
-
-
 
 
 	
@@ -98,13 +100,13 @@ void Testing_Ground(State &state)
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
-			syn.Change_Blend_Ratio(.01);
+			blender.Change_Blend_Ratio(.01);
 
 			//world.components.E_Model.Data[0].pos.x += walk;
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_LEFT) == GLFW_PRESS)
 		{
-			syn.Change_Blend_Ratio(-.01);
+			blender.Change_Blend_Ratio(-.01);
 			//world.components.E_Model.Data[0].pos.x -= walk;
 			
 		}
@@ -121,30 +123,22 @@ void Testing_Ground(State &state)
 		
 		
 		
-		std::vector<glm::mat4> cody = testing.Animate(Viewer::deltaTime);
 		
-		std::vector<glm::mat4> cody2 = testing2.Animate(Viewer::deltaTime);
+		SkeletonPose cody3 = syn.Animate(Viewer::deltaTime);
+		SkeletonPose cody4 = blender.Animate(Viewer::deltaTime);
 		
-		std::vector<glm::mat4> cody3 = syn.Animate(Viewer::deltaTime);
-		SkeletonPose cody4 = syn.Animate_Pose(Viewer::deltaTime);
-		/*
-		for (unsigned int k = 0; k < cody3.size(); ++k)
-		{
-			for (unsigned int j = 0; j < 4; ++j)
-			{
-				std::cout << cody3[k][0][j] << "::" << cody3[k][1][j] << "::" << cody3[k][2][j] << "::" << cody3[k][3][j] << "::" << std::endl;
-			}
-		}*/
+		
+	
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
-		world.Update_Animation(dummy->ID, cody4);
+		world.Update_Animation(dummy, cody3);
+		world.Update_Animation(dummy2, cody4);
 		
 		
-		Dummy2.Draw(Viewer::Projection, Viewer::View, glm::vec3(-4.0, 4.0, 0.0), Nano, cody3);
+		
+		world.Update_Position(dummies[0], Viewer::camera.Position+3.0f*Viewer::camera.Front_vector());
 		Crysis.Draw(Viewer::Projection,Viewer::View,glm::vec3(0.0,0.0,0.0),Nano);
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
-		Dummy2.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 0.0), Nano,cody);
-		Dummy2.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 4.0), Nano, cody2);
-		//Dummy.Draw(Viewer::Projection, Viewer::View, glm::vec3(0.0, 0.0, 0.0), Nano, matrices);
+		
 
 		//Change_Position
 		//Update everything

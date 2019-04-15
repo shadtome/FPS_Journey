@@ -27,8 +27,7 @@ public:
 	void Insert(Animation anim);				//Order Matters, meaning 0th animation is the first, and so on
 
 	//methods
-	std::vector<glm::mat4> Animate(float &deltatime);	//Animate all the animations, takes as input the delta change of the animation time
-	SkeletonPose Animate_Pose(float &deltatime);
+	SkeletonPose Animate(float &deltatime);	//Animate all the animations, takes as input the delta change of the animation time
 
 	void Start_Animation();								//Start the animation
 

@@ -20,8 +20,8 @@ class Animation_Manager
 	void Add(Animation anim);							// Add animation to list
 	void Start_Animation(const char* name);							// start the animation for the specifed animation
 	void End_Animation(const char* name);						//End the specific animation
-	std::vector<glm::mat4> Animate(const char* name, float &time);							//Animate the specific animation
-	std::vector<glm::mat4> Blend(float &time,const char* name1, const char* name2);				//blend the two animations together
+	SkeletonPose Animate(const char* name, float &time);							//Animate the specific animation
+	SkeletonPose Blend(float &time,const char* name1, const char* name2);				//blend the two animations together
 
 };
 

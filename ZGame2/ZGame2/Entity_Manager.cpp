@@ -111,11 +111,60 @@ void Entity_Manager::Input_Col(IEntity &entity, Collision col)
 
 }
 
+//-----------------------------------------------------------
+//Access Data
+
+//Model
+Model* Entity_Manager::access_model(IEntity* entity_ptr)
+{
+	
+	return &components.E_Model.Data[entity_ptr->Model_ID];
+}
+Model* Entity_Manager::access_model(unsigned int ID)
+{
+	return &components.E_Model.Data[World[ID].Model_ID];
+}
+
+
+
+
+
+
 //-----------------------------------------
 //Update Functions
-void Entity_Manager::Update_Animation(unsigned int &ID, SkeletonPose &pose)
+
+//Update Animation
+void Entity_Manager::Update_Animation(unsigned int &ID, SkeletonPose pose)
 {
 	components.E_Model.Data[World[ID].Model_ID].Cur_Pose = pose;
+}
+void Entity_Manager::Update_Animation(IEntity* &entity_ptr, SkeletonPose pose)
+{
+	components.E_Model.Data[entity_ptr->Model_ID].Cur_Pose = pose;
+}
+
+//Update Position
+void Entity_Manager::Update_Position(unsigned int &ID, glm::vec3 pos)
+{
+	components.E_Model.Data[World[ID].Model_ID].pos = pos;
+}
+void Entity_Manager::Update_Position(IEntity* &entity_ptr, glm::vec3 pos)
+{
+	components.E_Model.Data[entity_ptr->Model_ID].pos = pos;
+}
+
+
+//-----------------------------------------------------------
+//Animation Functions
+//Blend Animation
+void Entity_Manager::Blend_Animation(unsigned int entity_id, float beta, SkeletonPose &pose)
+{
+	unsigned int model_id = World[entity_id].Model_ID;
+	this->Update_Animation(entity_id, Blend_Poses(components.E_Model.Data[model_id].Cur_Pose, pose, beta));
+}
+void Entity_Manager::Blend_Animation(IEntity* &entity_ptr, float beta, SkeletonPose &pose)
+{
+	this->Update_Animation(entity_ptr->ID, Blend_Poses(components.E_Model.Data[entity_ptr->Model_ID].Cur_Pose, pose, beta));
 }
 
 

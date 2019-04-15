@@ -171,6 +171,9 @@
     <ClInclude Include="Collection_Files_Animations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Blenders.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ZGame1Main.cpp">
@@ -258,6 +261,9 @@
       <Filter>Source Files\Models/Graphics</Filter>
     </ClCompile>
     <ClCompile Include="AnimationSystem.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Blenders.cpp">
       <Filter>Source Files\Animation</Filter>
     </ClCompile>
   </ItemGroup>

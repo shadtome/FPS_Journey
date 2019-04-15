@@ -53,7 +53,7 @@ void Setup_Collision(Model &model, Collision &col)
 
 	//Put together all the vertices for the model
 	//Later we can do some specific meshes of the mkodel collision
-	for (auto k=model.model.meshes.begin(); k!= model.model.meshes.end(); ++k)
+	for (auto k=model.model->meshes.begin(); k!= model.model->meshes.end(); ++k)
 	{
 		for (auto v = k->vertices.begin(); v != k->vertices.end(); ++v)
 		{

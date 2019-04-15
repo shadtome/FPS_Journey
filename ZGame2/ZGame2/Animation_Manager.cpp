@@ -29,7 +29,7 @@ void Animation_Manager::End_Animation(const char* name)
 	this->List_Animators[name].End_Animation();
 }
 
-std::vector<glm::mat4> Animation_Manager::Animate(const char* name, float &time)
+SkeletonPose Animation_Manager::Animate(const char* name, float &time)
 {
 	return this->List_Animators[name].Animate(time);
 }

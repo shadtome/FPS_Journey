@@ -21,9 +21,53 @@ unsigned int Displacment_From_Root(const aiScene* scene, aiString name)
 }
 
 
+//-----------------------------------------------
+//Full_Model Functions
 
+//-----------------------------------
+//Constructors
 
+//Copy Constructor
+Full_Model::Full_Model(const Full_Model &other)
+{
+	this->Animations=(other.Animations);
+	//Need to make sure the animations have their skeletons pointing to their new model skeleton.
+	for (auto k = this->Animations.begin(); k != this->Animations.end(); ++k)
+	{
+		k->second.pskeleton = &this->skeleton;
+	}
+	this->directory = other.directory;
+	this->file_type = other.file_type;
+	this->HasSkeleton = other.HasSkeleton;
+	this->HasTextures = other.HasTextures;
+	this->meshes = other.meshes;
+	this->skeleton = other.skeleton;
+	this->textures_loaded = other.textures_loaded;
+}
 
+//--------------------------------
+//Copy Assigment operator
+Full_Model& Full_Model::operator=(const Full_Model& other)
+{
+	this->Animations = (other.Animations);
+	//Need to make sure the animations have their skeletons pointing to their new model skeleton.
+	for (auto k = this->Animations.begin(); k != this->Animations.end(); ++k)
+	{
+		k->second.pskeleton = &this->skeleton;
+	}
+	this->directory = other.directory;
+	this->file_type = other.file_type;
+	this->HasSkeleton = other.HasSkeleton;
+	this->HasTextures = other.HasTextures;
+	this->meshes = other.meshes;
+	this->skeleton = other.skeleton;
+	this->textures_loaded = other.textures_loaded;
+
+	return *this;
+}
+
+//---------------------------------------
+//Main Functions
 Full_Model::Full_Model(std::string path,bool hasskeleton,bool hastexture)
 {
 	this->HasTextures = hastexture;
@@ -33,7 +77,7 @@ Full_Model::Full_Model(std::string path,bool hasskeleton,bool hastexture)
 
 
 
-void Full_Model::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader,std::vector<glm::mat4> &joint_transforms)
+void Full_Model::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader,SkeletonPose pose)
 {
 	shader.use();
 	if (HasSkeleton)
@@ -41,7 +85,8 @@ void Full_Model::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shade
 		//Sets if the vertices have a skeleton associated with it
 		shader.setBool("skeleton", true);
 		//Set the joints in the vertex shader for this skeleton
-		shader.setMat4("Joint_Transforms", joint_transforms);	
+
+		shader.setMat4("Joint_Transforms", JointPoses_To_JointTransforms(pose));	
 	}
 	else
 	{
@@ -427,7 +472,6 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 				//Go through each of the key frames for this bone
 				for (unsigned int i = 0; i < scene->mAnimations[k]->mChannels[j]->mNumPositionKeys; ++i)
 				{
-					std::cout << "BIPDEDK" << std::endl;
 					//Basic information for Joint pose
 					Quaternion quat;
 					glm::vec3 pos;
@@ -476,8 +520,7 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 		
 		//Put the new collection of keyframes as a animation in to the data for model
 		Animation temp(scene->mAnimations[k]->mName.C_Str(), this->skeleton, key_frames, type);
-		//std::cout << scene->mAnimations[k]->mName.C_Str() << std::endl;
-		//this->Animations[scene->mAnimations[k]->mName.C_Str()]=temp;
+
 		this->Animations[name] = temp;
 		
 		

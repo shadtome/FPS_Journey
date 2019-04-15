@@ -56,12 +56,14 @@ public:
 
 	//Check if the Entity Already exists
 	bool Check_Exist(IEntity &entity);
+
 	//----------------------------------
 	// Get options for this Entity
 	bool Get_Options(IEntity &entity, Comp_Mask component);
 	//Check if option is turned on for this Entity
 	bool Is_Opt_On(IEntity &entity,Options opt);
 	bool Is_Opt_On(unsigned int &ID, Options opt);
+
 	//---------------------------------
 	// Input Data for the Entities
 	void Input_Data(IEntity &entity, const char* inputpath); // Need a way to import information from a file to make things easier
@@ -70,10 +72,37 @@ public:
 	//This is to import the information about the Collision data
 	void Input_Col(IEntity &entity, Collision col);
 
+
+	//---------------------------------------------
+	//Access functions (given a IEntity* or ID, access the specific data.
+
+	//MODEL
+	Model* access_model(IEntity* entity_ptr);
+	Model* access_model(unsigned int ID);
+
+
 	//----------------------------------------
 	//Update Functions
-	void Update_Animation(unsigned int &ID, SkeletonPose &pose);
 
+	//Update Animation
+	void Update_Animation(unsigned int &ID, SkeletonPose pose);
+	void Update_Animation(IEntity* &entity_ptr, SkeletonPose pose);
+
+	//Update Position
+	void Update_Position(unsigned int &ID, glm::vec3 pos);
+	void Update_Position(IEntity* &entity_ptr, glm::vec3 pos);
+
+
+
+	//Animations Functions
+	//Blend new animation to the current skeletonpose saved in Model.
+	/* Blend aniimation to the current pose for this entity.
+	* beta is a float from 0 to 1 corresponding to how much of the the new pose you want to blend to the current pose
+	* for example: current pose=walking.  player is hurt a little bit, so blend 20 percent damaged animation like in resident evil 2
+	* (so .2=beta) or if the player is really damaged, do 80 percent (beta=.8) ect.
+	*/
+	void Blend_Animation(unsigned int entity_id, float beta, SkeletonPose &pose);
+	void Blend_Animation(IEntity* &entity_ptr, float beta, SkeletonPose &pose);
 
 	//Activate the world (draw, collision, animate ect...)
 	void Activate();

@@ -43,6 +43,8 @@ void Component_Manager::Input_Model(IEntity &entity, Model model_data)
 	E_Model.Data.push_back(model_data);
 	E_Model.Data[entity.Model_ID].Entity_Vel_ID = entity.Vel_ID;
 	E_Model.Data[entity.Model_ID].Entity_ID = entity.ID;
+
+	//Next, we need to make sure that the ptrs in the animations are still pointing at the correct spot
 }
 
 void Component_Manager::Input_Col(IEntity &entity, Collision col_data)

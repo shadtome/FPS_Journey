@@ -126,6 +126,7 @@
     <ClInclude Include="AnimationSystem.h" />
     <ClInclude Include="Animation_Manager.h" />
     <ClInclude Include="AssimpExchange.h" />
+    <ClInclude Include="Blenders.h" />
     <ClInclude Include="Collection_Files_Animations.h" />
     <ClInclude Include="Component_Manager.h" />
     <ClInclude Include="ConfigureManager.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="AssimpExchange.cpp" />
     <ClCompile Include="Attributes.cpp" />
     <ClCompile Include="BasicMath.cpp" />
+    <ClCompile Include="Blenders.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="Components.cpp" />

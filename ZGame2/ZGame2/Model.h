@@ -49,24 +49,32 @@ public:
 
 	//Skeleton Data
 	Skeleton skeleton;
-	
 
-	
-	//Constructor
-	Full_Model(std::string path,bool hasskeleton,bool hastexture);
-	//Default constructor
-	Full_Model() {};
 
 	//Functions
-	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader,std::vector<glm::mat4> &joint_transforms);
+	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader,SkeletonPose pose);
 	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader);
 
 	//Import More Animations for this model
 	//Should we save the bones so we dont have to keep making them, but after the animations are loaded in, there is no point in saving this bone orders
-	void Import_Animation(std::string file, Type_of_Animation type,Name name);
+	void Import_Animation(std::string file, Type_of_Animation type,std::string name);
 
 	//Model Data
 	std::vector<Mesh> meshes;
+
+	//Constructors---------
+	
+	Full_Model(std::string path, bool hasskeleton, bool hastexture);
+	//Default constructor
+	Full_Model() {};
+		
+
+	//Copy constructor
+	Full_Model(const Full_Model &other);
+
+	//-------------------
+	//Copy Assignment operator
+	Full_Model& operator=(const Full_Model &other);
 private:
 	std::vector<Texture> textures_loaded;		//stores all the textures loaded so far, so we don't load in the same texture twice
 	

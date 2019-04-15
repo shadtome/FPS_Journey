@@ -13,8 +13,7 @@
 void Update_Animation(Entity_Manager &world, unsigned int entity_id, SkeletonPose &pose);
 void Update_Animation(Entity_Manager &world, IEntity* &entity_ptr, SkeletonPose &pose);
 
-//Blend new animation to the current skeletonpose saved in Model.
-void Blend_Animation(Model &model, SkeletonPose &pose);
+
 
 
 #endif

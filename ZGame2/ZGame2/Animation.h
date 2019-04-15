@@ -7,6 +7,7 @@
 
 //Forward Declare 
 class SyncAnim;
+class onedim_Blend;
 
 
 enum Type_of_Animation											//Types of animation, like a looping animation or not
@@ -43,6 +44,7 @@ class Animator
 {
 
 	friend SyncAnim;
+	friend onedim_Blend;
 
 
 public:
@@ -63,14 +65,20 @@ public:
 	Animator(Skeleton &skeleton, Animation &animation);
 	Animator();
 
+	//Copy Constructor
+	Animator(const Animator &other);
+
+	//Copy-Assighment operator
+	Animator& operator=(const Animator &other);
+
 	//Methods
 public:
 	void Start_Animation();													//Start animation
 	void End_Animation();													//End animation
-	std::vector<glm::mat4> Animate(float &deltatime);						//go through the process iterating the current animation time and figure out what to do with it (find new pose or stop)
+	SkeletonPose Animate(float &deltatime);						//go through the process iterating the current animation time and figure out what to do with it (find new pose or stop)
 	void Start_Blending(float &deltatime, Animator &other);					// Start blending with another animator
 	void End_Blending();													//End blending effect
-	std::vector<glm::mat4> Blend_Animate(float &deltatime, Animator other);	
+	SkeletonPose Blend_Animate(float &deltatime, Animator other);	
 
 	//New Blend Pose
 	SkeletonPose Blend_Pose(float deltatime, Animator &other);	//Find the new interpolated pose between this animator and the other
@@ -87,6 +95,14 @@ private:
 
 //Change Vector of JointPoses to vector of matrix transforms
 std::vector<glm::mat4> JointPoses_To_JointTransforms(SkeletonPose skeletonpose);
+
+
+//Blend Two animations together with a chosen beta
+/*This takes two poses to make a new blended pose with respect to the chosen blend parameter
+* For example, I want to blend a hurt animation 20 percent (beta=.2) in to the walking animation.
+* So input walking first, then hurt animation and then the blend factor .2
+*/
+SkeletonPose Blend_Poses(SkeletonPose &pose1, SkeletonPose &pose2, float beta);
 
 
 #endif

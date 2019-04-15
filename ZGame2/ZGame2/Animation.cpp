@@ -23,6 +23,35 @@ Animator::Animator()
 
 }
 
+//Copy Constructor
+Animator::Animator(const Animator &other)
+{
+	this->pskeleton = other.pskeleton; //Same skeleton, I don't want to make copies of the same skeleton everywhere.
+	this->Animating = other.Animating;
+	this->Blending = other.Blending;
+	this->Blending_Parameter = other.Blending_Parameter;
+	this->Blending_Start = other.Blending_Start;
+	this->Current_Anim_Time = other.Current_Anim_Time;
+	this->Cur_Anim = other.Cur_Anim;
+	this->End_Time = other.End_Time;
+}
+
+//------------------------------------
+//Copy Assighment Operator
+Animator& Animator::operator=(const Animator &other)
+{
+	this->pskeleton = other.pskeleton; //Same skeleton, I don't want to make copies of the same skeleton everywhere.
+	this->Animating = other.Animating;
+	this->Blending = other.Blending;
+	this->Blending_Parameter = other.Blending_Parameter;
+	this->Blending_Start = other.Blending_Start;
+	this->Current_Anim_Time = other.Current_Anim_Time;
+	this->Cur_Anim = other.Cur_Anim;
+	this->End_Time = other.End_Time;
+
+	return *this;
+}
+
 Animator::Animator(Skeleton &skeleton, Animation &animation) :Current_Anim_Time(0.0)
 {
 	this->pskeleton = &skeleton;
@@ -43,7 +72,6 @@ void Animator::End_Animation()
 
 SkeletonPose Animator::New_Pose()
 {
-
 
 	std::vector<JointPose> Temp_Pose;					//this will be the Interpolated Quaternions/Pos  to make the Global Transforms
 	Temp_Pose.reserve(this->pskeleton->JointCount);
@@ -83,7 +111,7 @@ SkeletonPose Animator::New_Pose()
 }
 
 
-std::vector<glm::mat4> Animator::Animate(float &deltatime)
+SkeletonPose Animator::Animate(float &deltatime)
 {
 	//std::cout << this->Current_Anim_Time << std::endl;
 	if (this->Animating)										//Is this animating?
@@ -94,12 +122,12 @@ std::vector<glm::mat4> Animator::Animate(float &deltatime)
 		{
 			if (this->Current_Anim_Time < this->End_Time)
 			{
-				return JointPoses_To_JointTransforms( New_Pose());
+				return  New_Pose();
 			}
 			else
 			{
 				Start_Animation();
-				return JointPoses_To_JointTransforms(New_Pose());
+				return New_Pose();
 			}
 		}
 		
@@ -107,7 +135,7 @@ std::vector<glm::mat4> Animator::Animate(float &deltatime)
 		{
 			if (this->Current_Anim_Time < this->End_Time)
 			{
-				return JointPoses_To_JointTransforms(New_Pose());
+				return New_Pose();
 			}
 			else
 			{
@@ -143,14 +171,14 @@ SkeletonPose Animator::Blend_Pose(float deltatime, Animator &other)
 	std::vector<JointPose> Temp_Pose;					//this will be the Interpolated Quaternions/Pos  to make the Global Transforms
 	Temp_Pose.reserve(this->pskeleton->JointCount);
 
-
+	
 	//First we need to figure out which key frames the first animation is in between
+	
 	int k = 1;
 	while (Cur_Anim.KeyFrames[k].first < Current_Anim_Time && k<Cur_Anim.KeyFrames.size()-1)
 	{
 		k += 1;
 	}
-
 	//time parameter between 0 and 1
 	float beta = deltatime;
 
@@ -220,21 +248,54 @@ std::vector<glm::mat4>Animator::Blend_Animate(float &deltatime,Animator other)
 	}
 }*/
 
-
+//-----------------------------------------------
+//Joint poses to joint transforms.
+//Joint poses are very easily blended.  but to actually animate we need matrices.
 std::vector<glm::mat4> JointPoses_To_JointTransforms(SkeletonPose skeletonpose)
-{
-	std::vector<glm::mat4> New_Inter_Global_Tran;
-	
+{	
 	for (unsigned int k = 0; k < skeletonpose.Poses_Joints.size(); ++k)			//Make sure to compile each Jointpose's Matrix transform.
 	{
 		skeletonpose.Poses_Joints[k].Compile_Transform();
-
 	}
-	
-	
 	skeletonpose.Setup_Pose();
-	
-	New_Inter_Global_Tran = skeletonpose.Global_Poses;
 
-	return New_Inter_Global_Tran;
+	return skeletonpose.Global_Poses;
+}
+
+
+
+
+//-----------------------------------------------
+//Blend Poses
+SkeletonPose Blend_Poses(SkeletonPose &pose1, SkeletonPose &pose2, float beta)
+{
+	std::vector<JointPose> Temp_Pose;					//this will be the Interpolated Quaternions/Pos  to make the Global Transforms
+	Temp_Pose.reserve(pose1.pSkeleton->JointCount);
+
+	if (0 <= beta <= 1)
+	{
+		//std::cout << beta << std::endl;
+			//Slerp Method, using Geodesics of the sphere
+		for (int j = 0; j < pose1.pSkeleton->JointCount; ++j)
+		{
+
+			//JointPose temp = Lerp(beta, pose1[j], pose2[j]);
+			JointPose temp = Slerp(beta, pose1.Poses_Joints[j], pose2.Poses_Joints[j], *pose1.pSkeleton);
+			Temp_Pose.push_back(temp);
+		}
+
+
+		return SkeletonPose(*pose1.pSkeleton, Temp_Pose);
+	}
+	else if (beta < 0)
+	{
+		return pose1;
+	}
+	else
+	{
+		return pose2;
+	}
+
+
+	
 }

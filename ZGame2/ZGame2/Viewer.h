@@ -22,6 +22,8 @@
 class Viewer
 {
 public:
+	static Camera camera;
+
 	static void init(); // Displays the viewer until the program ends
 
 	static void Process_Input();	//Process the Inputs (Keyboard controllers,ect...)
@@ -45,7 +47,7 @@ public:
 
 	//Lighting effects, needs position of light source
 	static void SetLighting(glm::vec3 pos, Shader shader);
-
+	
 private:
 
 	//Window size
@@ -55,7 +57,7 @@ private:
 	//Field of View
 	static float FOV;
 
-	static Camera camera;
+	
 	//Keeps track of the view state
 
 

@@ -79,13 +79,11 @@ void Set_VAO(Model &model)
 //Draw Entity model
 void Draw_Entity(Model &Model, glm::mat4 &projection, glm::mat4 &view, glm::mat4 &model_M, Shader &shader)
 {
-	Model.model.Draw(projection, view,Model.pos , shader);		//Draw the entity using the Full_Model class and mesh
+	Model.model->Draw(projection, view,Model.pos , shader);		//Draw the entity using the Full_Model class and mesh
 }
 void Draw_Entity(Model &Model, glm::mat4 &projection, glm::mat4 &view, glm::mat4 &model_M, Shader &shader,SkeletonPose &pose)
 {
-	//Compile all the Quaternions in to matrices for final shipment in to the shader.
-	std::vector<glm::mat4> joint_transform = pose.Setup_Pose();
-	Model.model.Draw(projection, view, Model.pos, shader, joint_transform);
+	Model.model->Draw(projection, view, Model.pos, shader, pose);
 }
 
 
@@ -195,7 +193,7 @@ void Draw_World(Entity_Manager &world, glm::mat4 &projection, glm::mat4 &view, S
 		model_matrix = glm::scale(model_matrix, glm::vec3(world.components.E_Model.Data[k].scale[0], world.components.E_Model.Data[k].scale[1], world.components.E_Model.Data[k].scale[2]));
 		model_matrix = glm::rotate(model_matrix, world.components.E_Model.Data[k].angle, world.components.E_Model.Data[k].Vector_Rot);
 
-		if (world.Is_Opt_On(world.components.E_Model.Data[k].Entity_ID,ANIMATION))
+		if (world.Is_Opt_On(world.components.E_Model.Data[k].Entity_ID,ANIMATION) && world.components.E_Model.Data[k].Cur_Pose.Poses_Joints.size()>1)
 		{
 			Draw_Entity(world.components.E_Model.Data[k], projection, view, model_matrix, shader,world.components.E_Model.Data[k].Cur_Pose);
 		}
