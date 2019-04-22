@@ -13,15 +13,19 @@
 ( two for looking and two for the running and strafing)
 */
 
+//Forward decelerations
+class Square_twodim_Blend;
 
 //-------------------------------------------------
 //One dimensional Lerp blending
 //This is the generalization of the SyncAnime class
 class onedim_Blend
 {
+	friend Square_twodim_Blend;
 private:
 	//Animations with pescribed locations on the real line
 	std::map<float,Animator> anims;
+
 
 	//current position on the real line
 	float blend_ratio;
@@ -53,7 +57,11 @@ public:
 	void Start_Animation();								
 
 	//Change the Blend ratio, which afffects how two neighboring animations weights
-	void Change_Blend_Ratio(float time);				
+	void Change_Blend_Ratio(float delta);
+	//Set the blend ratio to a certain number.
+	void Set_Blend_Ratio(float delta);
+
+	float Cur_Blend_Ratio();
 
 private:
 	//New pose given based on two neighboring animations
@@ -64,10 +72,70 @@ private:
 
 //-------------------------------------------------------------------
 //2 dim blend
-class twodim_Blend
+
+/* We are blending 4 different animations (good for looking around animation ect..)
+ we can imagine these animations as corners of a square 
+
+		A ----------AB----------B
+		-			-		    -
+		-			-			-
+		-			ABCD		-
+		-			-			-
+		-			-			-
+		C------------CD---------D
+		where AB is the 1-dim blend between A and B, same for CD. ABCD is the 1-dim blend between AB and CD.
+
+	We will blend from top to bottom i.e. (beta*bottom +(1-beta) * top)
+	Only works right now with animations that are exactly the same on the real line
+*/
+
+class Square_twodim_Blend
 {
 
+	//Just need the blend in the y direction, as the x direction blends are embedded in the onedim blends
+	float blend_y;
+
+	/* Two one-dim blends, both have the same number of elements
+	and both have their animations at the same times(i don't think I need this)
+	*/
+	onedim_Blend Top_b;
+	onedim_Blend Bot_b;
+
+	//Speed of the blended animations
+	//This is a result of blending between the top speed and the bottom speed.
+	float speed;
+
+	//Current animation time
+	float Cur_time;
+
+public:
+	//constructor 
+	Square_twodim_Blend() {};
+
+	//Insert animation to the top of the square (in order A B) from left to right.
+	void Top_insert(Animator &anim, float pos);
+	//Insert animation to the bottom of the square from left to right.
+	void Bot_insert(Animator &anim, float pos);
+
+	//Animation functions
+	SkeletonPose Animate(float &deltatime);	//Animate all the animations, takes as input the delta change of the animation time
+
+	void Start_Animation();
+
+	//Change the Blend ratio, which afffects how two neighboring animations weights
+	void Change_Blend_Ratio(float delta_x,float delta_y);
+	//This sets the blend ratio to which ever parameter. (between 0 and 1)
+	void Set_Blend_Ratio(float delta_x, float delta_y);
+
+private:
+	//New pose given based on two neighboring animations
+	SkeletonPose New_Pose(SkeletonPose Top,SkeletonPose Bot);
+
 };
+
+
+
+
 
 
 #endif

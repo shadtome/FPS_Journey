@@ -3,11 +3,21 @@
 
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+//Constants
+const float PI_f = 3.14159265358979f;
+const double PI = 3.14159265358979328463;
+
+
 //--------------------------------------------------------------
 //Basis Math
+
+//Safe inverse functions
+float SafeAcos(float x);
+double SafeAcos(double x);
 
 //Dot Product
 

@@ -10,7 +10,7 @@ JointPose Lerp(float &beta, JointPose joint1, JointPose joint2,Skeleton& skeleto
 
 JointPose Slerp(float &beta, JointPose joint1, JointPose joint2,Skeleton& skeleton);		//Spherical Lerp interpolation between two Joint Poses
 
-
+SkeletonPose Pose_Slerp(float &beta, SkeletonPose pose1, SkeletonPose pose2);
 
 
 

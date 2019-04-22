@@ -1,6 +1,38 @@
 
 #include "BasicMath.h"
 
+//-------------------------------------------------
+//Safe inverse functions
+float SafeAcos(float x)
+{
+	if (x < -1)
+	{
+		return PI_f;
+	}
+	else if (x > 1)
+	{
+		return 0.0f;
+	}
+	else
+	{
+		return acos(x);
+	}
+}
+double SafeAcos(double x)
+{
+	if (x < -1)
+	{
+		return PI;
+	}
+	else if (x > 1)
+	{
+		return 0.0f;
+	}
+	else
+	{
+		return acos(x);
+	}
+}
 
 //----------------------------------------------------------------
 //Dot Product 

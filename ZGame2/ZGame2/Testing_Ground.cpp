@@ -39,6 +39,10 @@ void Testing_Ground(State &state)
 	ResourceManager::LoadModel("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae", "DUMMY", true, false);
 	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae", LOOP, "run", "DUMMY");
 	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player walk animation.dae", LOOP, "walk", "DUMMY");
+	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Left Up.dae", LOOP, "up right", "DUMMY");
+	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Right Up.dae", LOOP, "up left", "DUMMY");
+	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Down Left.dae", LOOP, "down left", "DUMMY");
+	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Down Right.dae", LOOP, "down right", "DUMMY");
 	
 	Full_Model Crysis("/Users/Cody Tipton/Desktop/GIT/Models/Crysis/nanosuit.obj",false,true);
 	
@@ -48,7 +52,7 @@ void Testing_Ground(State &state)
 	//Full_Model Dummy("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/free3Dmodel.dae", true,false);
 
 	//Spawn the DUMMY!
-	IEntity* dummy=Spawner(world, "DUMMY", glm::vec3(-3.0, 4.0, 0.0), ANIMATION);
+	IEntity* dummy=Spawner(world, "DUMMY", glm::vec3(6.0, 1.0, 0.0), ANIMATION);
 	IEntity* dummy2 = Spawner(world, "DUMMY", glm::vec3(9.0, 0.0, 0.0), ANIMATION);
 
 	std::vector<IEntity*> dummies;
@@ -75,9 +79,14 @@ void Testing_Ground(State &state)
 	syn.Start_Animation();
 
 
-	
-
-	
+	//Testing square blend
+	Square_twodim_Blend testing;
+	testing.Top_insert(world.access_model(dummy)->animators["up left"], 0.0);
+	testing.Top_insert(world.access_model(dummy)->animators["up right"], 1.0);
+	testing.Bot_insert(world.access_model(dummy)->animators["down left"], 0.0);
+	testing.Bot_insert(world.access_model(dummy)->animators["down right"], 1.0);
+	testing.Start_Animation();
+	testing.Set_Blend_Ratio(0.5, 0.5);
 
 	while (!glfwWindowShouldClose(Viewer::Window) && state==TEST)
 	{
@@ -89,24 +98,27 @@ void Testing_Ground(State &state)
 		//Move a box around
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_UP) == GLFW_PRESS)
 		{
-			
+			testing.Change_Blend_Ratio(0.0, -0.1);
 			//world.components.E_Model.Data[0].pos.y += walk;
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		{
-			
+			testing.Change_Blend_Ratio(0.0, 0.1);
 	
 			//world.components.E_Model.Data[0].pos.y -= walk;
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
+			testing.Change_Blend_Ratio(0.1, 0.0);
 			blender.Change_Blend_Ratio(.01);
-
+			syn.Change_Blend_Ratio(.01);
 			//world.components.E_Model.Data[0].pos.x += walk;
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_LEFT) == GLFW_PRESS)
 		{
+			testing.Change_Blend_Ratio(-0.1, 0.0);
 			blender.Change_Blend_Ratio(-.01);
+			syn.Change_Blend_Ratio(-0.01);
 			//world.components.E_Model.Data[0].pos.x -= walk;
 			
 		}
@@ -126,16 +138,16 @@ void Testing_Ground(State &state)
 		
 		SkeletonPose cody3 = syn.Animate(Viewer::deltaTime);
 		SkeletonPose cody4 = blender.Animate(Viewer::deltaTime);
-		
+		SkeletonPose aim = testing.Animate(Viewer::deltaTime);
 		
 	
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
 		world.Update_Animation(dummy, cody3);
 		world.Update_Animation(dummy2, cody4);
+		world.Update_Animation(dummies[0], aim);
 		
 		
-		
-		world.Update_Position(dummies[0], Viewer::camera.Position+3.0f*Viewer::camera.Front_vector());
+		world.Update_Position(dummies[0], glm::vec3(0.0,0.0,0.0));
 		Crysis.Draw(Viewer::Projection,Viewer::View,glm::vec3(0.0,0.0,0.0),Nano);
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
 		
