@@ -31,6 +31,10 @@
  glm::vec3 Assimp_Vec3Conv(aiVector3D &vec, std::string &file_type);
 
 
+/* Transform the Assimp scales to glm scales 
+*/
+ glm::vec3 Assimp_ScaleConv(aiVector3D &vec, std::string &file_type);
+
 
 
 #endif

@@ -93,7 +93,7 @@ void Viewer::SetGL()
 {
 	glEnable(GL_CULL_FACE); // Enable culling counter clockwise
 	glEnable(GL_DEPTH_TEST); // Depth Testing
-	glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //Keep the mouse on the screen
+	//glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //Keep the mouse on the screen
 
 }
 

@@ -8,6 +8,7 @@
 //Forward Declare 
 class SyncAnim;
 class onedim_Blend;
+class Difference_Animator;
 
 
 enum Type_of_Animation											//Types of animation, like a looping animation or not
@@ -45,9 +46,9 @@ class Animator
 
 	friend SyncAnim;
 	friend onedim_Blend;
+	friend Difference_Animator;
 
 
-public:
 	Skeleton* pskeleton; //Pointer to skeleton this is associated to
 
 	Animation Cur_Anim;  // Current animation
@@ -60,7 +61,7 @@ public:
 
 	float Blending_Start;
 	float Blending_Parameter = 0;
-
+public:
 	//Constructors
 	Animator(Skeleton &skeleton, Animation &animation);
 	Animator();

@@ -135,6 +135,82 @@ private:
 
 
 
+//-------------------------------------
+//Triangular two-dimensional Lerp Blending
+
+/* This is used to blend a arbitrary number of animations at arbitrary locations in the plane.  
+* The follow class is used to blend three animations based on barycentric coordinates for a simplex.
+* This used Lerp instead of Slerp to do the interpolation, since Lerp can be generalized to any simplex.
+* IMPLEMENT THIS LaTER
+*/
+
+class Triangle_twodim_Blend
+{
+	//Two blend factors
+	float blend_a;
+	float blend_b;
+
+
+};
+
+
+
+//----------------------------------------
+//Additive Blending
+
+/* This is used to add effects to already stable animations.  For example, a running animation, we can "add" a hurt animation using
+* a additive blending.
+
+* One must input a Source animation, and a reference animation to get the difference pose,
+Then we can "act" this on another animation to give it this difference effect.
+* Right now, the differencepose is in SkeletonPose format with SQT, but might need it to be in matrix format.
+* 
+*/
+
+class Difference_Animator
+{
+	//NOTE: Both source and reference have to have the same duration, exactly!
+	//Source Clip
+	Animator source;
+
+	//Reference Clip
+	Animator reference;
+
+	//Blend factor
+	float beta;
+
+public:
+	//Constructor
+	//NOTE: Both the source and reference animators must have the same duration!!
+	Difference_Animator(Animator &source, Animator &reference);
+
+	//Add difference pose to other pose, with blend factor beta
+	//NOTE: the target animation does not have to have the same duration, or even related to this difference clip.
+
+	SkeletonPose Add_Anim(Animator &other,float &deltatime);
+	SkeletonPose Add_Pose(SkeletonPose &target, float &deltatime);
+
+	//Change blend factor
+	void Change_blend_factor(float &deltabeta);
+
+	//Set blend factor
+	void Set_blend_factor(float &Beta);
+	//Start adding animation with blend factor beta
+	void start(float Beta);
+
+	//Turn off adding animation
+	void stop();
+
+
+
+private:
+	SkeletonPose Setup_Pose(float &deltatime);
+
+
+};
+
+
+
 
 
 

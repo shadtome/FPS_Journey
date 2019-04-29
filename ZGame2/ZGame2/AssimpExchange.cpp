@@ -62,6 +62,24 @@
 	 return result;
  }
 
+ glm::vec3 Assimp_ScaleConv(aiVector3D &vec, std::string &file_type)
+ {
+	 glm::vec3 result;
+	 if (file_type == ".dae" || file_type == ".fbx")
+	 {
+		 result.x = vec.x;
+		 result.y = vec.y;
+		 result.z = vec.z;
+	 }
+	 else
+	 {
+		 result.x = vec.x;
+		 result.y = vec.y;
+		 result.z = vec.z;
+	 }
+	 return result;
+ }
+
 
  Quaternion Assimp_QuatConv(aiQuaternion &quat)
 {

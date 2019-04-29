@@ -282,3 +282,95 @@ SkeletonPose Square_twodim_Blend::New_Pose(SkeletonPose Top, SkeletonPose Bot)
 }
 
 
+
+
+//----------------------------------------------
+//Difference Animator
+
+//Functions
+
+//Constructors!
+Difference_Animator::Difference_Animator(Animator &source, Animator &reference)
+{
+	this->source = source;
+	this->reference = reference;
+
+	this->reference.End_Time = source.End_Time / reference.End_Time;
+}
+
+
+//Add difference pose to another.
+SkeletonPose Difference_Animator::Add_Pose(SkeletonPose &target,float &deltatime)
+{
+	//First set up the pose for S-R
+	SkeletonPose RS = Setup_Pose(deltatime);
+
+	//First we need to multiply D * T (matrix wise) 
+
+	std::vector<JointPose> temp_jp;
+	
+	for (unsigned int k = 0; k <RS.pSkeleton->JointCount; ++k)
+	{
+		Quaternion temp_q;
+		glm::vec3 temp_p; 
+
+		temp_q = target.Poses_Joints[k].Rot_Quat*RS.Poses_Joints[k].Rot_Quat;
+
+		temp_p = RS.Poses_Joints[k].Pos_in_Parent + target.Poses_Joints[k].Pos_in_Parent;
+
+		temp_jp.push_back(JointPose(temp_q, temp_p, *RS.Poses_Joints[k].pJoint, *RS.pSkeleton));
+	}
+
+	SkeletonPose DT(*RS.pSkeleton, temp_jp);
+
+	return Pose_Slerp(beta, target, DT);
+}
+
+
+
+SkeletonPose Difference_Animator::Setup_Pose(float &deltatime)
+{
+	std::vector<JointPose> temp_jp;
+
+	SkeletonPose source_pose = source.Animate(deltatime);
+	SkeletonPose reference_pose = reference.Animate(deltatime);
+
+	for (unsigned int k = 0; k < source.pskeleton->JointCount; ++k)
+	{
+		Quaternion temp_q;	//temp quaternion
+		glm::vec3 temp_p;	//temp position
+
+		temp_q = reference_pose.Poses_Joints[k].Rot_Quat.inverse()*source_pose.Poses_Joints[k].Rot_Quat;
+
+		temp_p = -reference_pose.Poses_Joints[k].Pos_in_Parent + source_pose.Poses_Joints[k].Pos_in_Parent;
+
+		temp_jp.push_back(JointPose(temp_q, temp_p, *source_pose.Poses_Joints[k].pJoint, *source_pose.pSkeleton));
+	}
+
+	return SkeletonPose(*source_pose.pSkeleton, temp_jp);
+}
+
+
+void Difference_Animator::start(float Beta)
+{
+	this->source.Start_Animation();
+	this->reference.Start_Animation();
+
+	this->beta = Beta;
+}
+
+void Difference_Animator::stop()
+{
+	this->source.End_Animation();
+	this->reference.End_Animation();
+}
+
+void Difference_Animator::Change_blend_factor(float &deltabeta)
+{
+	this->beta += deltabeta;
+}
+
+void Difference_Animator::Set_blend_factor(float &Beta)
+{
+	this->beta = Beta;
+}

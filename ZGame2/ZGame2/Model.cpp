@@ -441,6 +441,7 @@ void Full_Model::ProcessSkeleton(const aiScene* scene,std::vector<aiBone*> &bone
 //Process Animation..... This was convoluted, because of the way assimp has its data structure.
 void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &bones,Type_of_Animation type,std::string name)
 {
+	
 	//Go through each animation
 	for (unsigned int k = 0; k < scene->mNumAnimations; ++k)
 	{
@@ -455,6 +456,10 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 		//Each sub vector holds the Joint poses for keyframes for a specific bone
 		std::vector<std::vector<JointPose>> Coll_joint_poses;
 
+		//Paramter to make sure we get at least one bone that has positive bone_index
+		// and to record the mTime
+		bool time=true;
+
 		//Go through each bone (channels)
 		for (unsigned int j = 0; j < scene->mAnimations[k]->mNumChannels; ++j)
 		{
@@ -462,9 +467,10 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 			int bone_index = this->skeleton.Search(scene->mAnimations[k]->mChannels[j]->mNodeName.C_Str());
 			
 			
+
 			//Collection of key frames for this specific bone, for this specific animation
 			std::vector<JointPose> bone_keys;
-
+			
 			//Check to make sure this bone is actually in the skeleton structure (it might be a biped system bone)
 			if (bone_index != -1)
 			{
@@ -482,24 +488,30 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 					
 					//Pos of the joints in its parent for this keyframe
 					pos = Assimp_Vec3Conv(scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mValue,this->file_type);
-					scale = Assimp_Vec3Conv(scene->mAnimations[k]->mChannels[j]->mScalingKeys[i].mValue,this->file_type);
+					scale = Assimp_ScaleConv(scene->mAnimations[k]->mChannels[j]->mScalingKeys[i].mValue,this->file_type);
 
 					JointPose jpose(quat, pos, scale, skeleton.Vector_Joints[bone_index], this->skeleton);
 					bone_keys.push_back(jpose);
-	
+				
 
 					//This grabs the key frame times for later, we only need to do it once
-					if (j==0)
+					if (time)
 					{
+						std::cout << scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime << std::endl;
 						//This is ordered with respect to the keys
 						keyTimes.push_back(scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime);
+						if(i==scene->mAnimations[k]->mChannels[j]->mNumPositionKeys-1)
+							time = false;
+						
 					}
 				}
+				//Put in the ordered key frames 
+				Coll_joint_poses.push_back(bone_keys);
 			}
 			
-			//Put in the ordered key frames 
-			Coll_joint_poses.push_back(bone_keys);
+			
 		}
+		
 		// set up the skeleton poses for each keyframes
 		for (unsigned int u = 0; u < scene->mAnimations[k]->mChannels[0]->mNumPositionKeys; ++u)		//# of keyframes for this animation
 		{
@@ -516,12 +528,15 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 			//skeleton keyframe
 			SkeletonPose keyframe(skeleton, poses);
 			key_frames.push_back({ keyTimes[u],keyframe });
+			
 		}
 		
 		//Put the new collection of keyframes as a animation in to the data for model
 		Animation temp(scene->mAnimations[k]->mName.C_Str(), this->skeleton, key_frames, type);
 
-		this->Animations[name] = temp;
+		std::string Name = name + std::to_string(k);
+		std::cout << Name << std::endl;
+		this->Animations[Name] = temp;
 		
 		
 	}

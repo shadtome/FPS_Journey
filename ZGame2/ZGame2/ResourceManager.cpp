@@ -42,7 +42,7 @@ Full_Model ResourceManager::LoadModel(std::string file,std::string name, bool ha
 	return Models[name];
 }
 
-Full_Model ResourceManager::GetModel(std::string name)
+Full_Model& ResourceManager::GetModel(std::string name)
 {
 	return Models[name];
 }

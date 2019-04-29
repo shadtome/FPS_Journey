@@ -47,7 +47,7 @@ public:
 	static Full_Model LoadModel(std::string file_path,std::string name, bool hasskeleton, bool hastexture);
 
 	//Retrieve a stored model
-	static Full_Model GetModel(std::string name);
+	static Full_Model& GetModel(std::string name);
 
 	//Import animation to certain Model
 	static void LoadAnimation(std::string file, Type_of_Animation type, std::string name_animation,std::string name_model);

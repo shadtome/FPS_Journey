@@ -7,7 +7,7 @@ JointPose Lerp(float &beta, JointPose joint1, JointPose joint2,Skeleton& skeleto
 	glm::vec3 temp_pos;
 
 	//look at (1-beta) PoseJoint[k-1]+beta(PoseJoint[k]
-	temp_quat = joint1.Rot_Quat*Pow(joint1.Rot_Quat.Invert()*joint2.Rot_Quat,beta);
+	temp_quat = joint1.Rot_Quat*Pow(joint1.Rot_Quat.inverse()*joint2.Rot_Quat,beta);
 
 	temp_pos = joint2.Pos_in_Parent*(beta)+joint1.Pos_in_Parent*(1 - beta);
 
@@ -26,6 +26,7 @@ JointPose Slerp(float &beta, JointPose joint1, JointPose joint2,Skeleton& skelet
 		//Temporary quarternions/Pos
 		Quaternion temp_quat;
 		glm::vec3 temp_pos;
+		glm::vec3 temp_scale;
 		float dot = glm::dot(joint2.Rot_Quat.Vector, joint1.Rot_Quat.Vector) / (joint2.Rot_Quat.Norm()*joint1.Rot_Quat.Norm());
 
 		
@@ -43,12 +44,16 @@ JointPose Slerp(float &beta, JointPose joint1, JointPose joint2,Skeleton& skelet
 			temp_quat = joint2.Rot_Quat*(sin(angle*beta) / sin(angle)) + joint1.Rot_Quat*(sin(angle*(1 - beta)) / sin(angle));
 		}
 		
+		temp_quat = temp_quat *(1/ temp_quat.Norm());
 
 
+		temp_pos = (joint2.Pos_in_Parent*(beta)+joint1.Pos_in_Parent*(1 - beta));
 
-		temp_pos = joint2.Pos_in_Parent*(beta)+joint1.Pos_in_Parent*(1 - beta);
+		temp_scale = joint2.scale*(beta)+joint1.scale*(1 - beta);
 
-		JointPose temp(temp_quat, temp_pos, *joint1.pJoint, skeleton);
+		
+		
+		JointPose temp(temp_quat, temp_pos,temp_scale, *joint1.pJoint, skeleton);
 		return temp;
 	}
 	else
@@ -62,6 +67,7 @@ JointPose Slerp(float &beta, JointPose joint1, JointPose joint2,Skeleton& skelet
 
 SkeletonPose Pose_Slerp(float &beta, SkeletonPose pose1, SkeletonPose pose2)
 {
+
 	std::vector<JointPose> joints;
 	for (unsigned int k = 0; k < pose1.pSkeleton->JointCount; ++k)
 	{

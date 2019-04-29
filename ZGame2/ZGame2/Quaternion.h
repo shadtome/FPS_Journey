@@ -42,6 +42,8 @@ public:
 	 //Quarternion norm
 	 float Norm() const;
 
+	 void Normalize();
+
 	 //override the mulplication operator between two Quarternions
 	 Quaternion operator*(const Quaternion &other) const;
 
@@ -53,7 +55,7 @@ public:
 	 Quaternion operator+(Quaternion other) const;
 
 	 //Inverse/conjugate (they are the same for unit quarternions
-	 Quaternion Invert();
+	 Quaternion inverse()const;
 
 	 //Matrix Representation in GL(4,RR)
 	 glm::mat3 Matrix_Rep() const;

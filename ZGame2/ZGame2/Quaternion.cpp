@@ -99,6 +99,11 @@ float Quaternion::Norm() const
 	return sqrt(pow(this->scalar, 2) + pow(this->Vector[0], 2) + pow(this->Vector[1], 2) + pow(this->Vector[2], 2));
 }
 
+void Quaternion::Normalize()
+{
+	*this*(1 / this->Norm());
+}
+
 Quaternion Quaternion::operator*(const Quaternion &other) const
 {
 	Quaternion result;
@@ -117,7 +122,7 @@ Quaternion Quaternion::operator*(const Quaternion &other) const
 Quaternion Quaternion::operator+(Quaternion other) const
 {
 	Quaternion result;
-	result.Vector = this->Vector + other.Vector;  //Note that this is not unit anymore, i might just normalize this anyways, we will see
+	result.Vector = this->Vector + other.Vector;  //Note that this is not unit anymore
 	result.scalar = this->scalar + other.scalar;
 
 	return result;
@@ -132,11 +137,17 @@ Quaternion Quaternion::operator*(const float scale) const
 	return result;
 }
 
-Quaternion Quaternion::Invert()
+Quaternion Quaternion::inverse() const
 {
 	Quaternion temp;
 	temp.Vector =-this->Vector;
 	temp.scalar = this->scalar;
+	float d = pow(temp.scalar, 2) + pow(temp.Vector.x, 2) + pow(temp.Vector.y, 2) + pow(temp.Vector.z, 2);
+	if (d != 0)
+	{
+		temp*(1 / d);
+	}
+	
 	return temp;
 }
 
@@ -153,12 +164,10 @@ glm::mat3 Quaternion::Matrix_Rep() const
 glm::vec3 Quaternion::Conjugation(glm::vec3 &vector) const
 {
 	Quaternion temp_quat;
-	Quaternion Inverse;
-	//Inverse Scalar
-	Inverse.Vector = -Vector;
-	Inverse.scalar = scalar;
+	Quaternion Inverse = this->inverse();
+
 	//Temp quarternion representing the vector
-	temp_quat.Vector = vector; // Set the vector part as vector with out normalizing (we don't need to)
+	temp_quat.Vector = vector; 
 	temp_quat.scalar = 0;  // Set the Scalar part as 0
 
 	glm::vec3 result;
