@@ -144,13 +144,22 @@ void Entity_Manager::Update_Animation(IEntity* &entity_ptr, SkeletonPose pose)
 }
 
 //Update Position
-void Entity_Manager::Update_Position(unsigned int &ID, glm::vec3 pos)
+void Entity_Manager::Set_Position(unsigned int &ID, glm::vec3 pos)
 {
 	components.E_Model.Data[World[ID].Model_ID].pos = pos;
 }
-void Entity_Manager::Update_Position(IEntity* &entity_ptr, glm::vec3 pos)
+void Entity_Manager::Set_Position(IEntity* &entity_ptr, glm::vec3 pos)
 {
 	components.E_Model.Data[entity_ptr->Model_ID].pos = pos;
+}
+
+void Entity_Manager::Update_Position(unsigned int& ID, glm::vec3 pos)
+{
+	components.E_Model.Data[World[ID].Model_ID].pos +=pos;
+}
+void Entity_Manager::Update_Position(IEntity* &entity_ptr, glm::vec3 pos)
+{
+	components.E_Model.Data[entity_ptr->Model_ID].pos +=pos;
 }
 
 

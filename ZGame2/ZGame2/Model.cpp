@@ -3,6 +3,9 @@
 #include "AssimpExchange.h"
 
 
+
+
+
 unsigned int Displacment_From_Root(const aiScene* scene, aiString name)
 {
 	aiNode* node;
@@ -77,7 +80,7 @@ Full_Model::Full_Model(std::string path,bool hasskeleton,bool hastexture)
 
 
 
-void Full_Model::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader,SkeletonPose pose)
+void Full_Model::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 pos, Shader &shader,SkeletonPose &pose)
 {
 	shader.use();
 	if (HasSkeleton)
@@ -113,7 +116,43 @@ void Full_Model::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shade
 	shader.Stop();
 }
 
-void Full_Model::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader)
+void Full_Model::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 pos,float &angle,glm::vec3 &rot_vec, Shader &shader, SkeletonPose &pose)
+{
+	shader.use();
+	if (HasSkeleton)
+	{
+		//Sets if the vertices have a skeleton associated with it
+		shader.setBool("skeleton", true);
+		//Set the joints in the vertex shader for this skeleton
+
+		shader.setMat4("Joint_Transforms", JointPoses_To_JointTransforms(pose));
+	}
+	else
+	{
+		shader.setBool("skeleton", false);
+	}
+
+	if (this->HasTextures)
+	{
+		shader.setBool("textures", true);
+	}
+	else
+	{
+		shader.setBool("textures", false);
+		shader.setVec3("material.ambient", 0.8, 0.7, 0.31);
+		shader.setVec3("material.diffuse", 0.8, 0.7, 0.31);
+		shader.setVec3("material.specular", 0.2, 0.2, 0.2);
+		shader.setFloat("material.shininess", 32.0);
+	}
+	for (unsigned int i = 0; i < meshes.size(); ++i)
+	{
+
+		meshes[i].Draw(projection, view, pos,angle,rot_vec, shader);
+	}
+	shader.Stop();
+}
+
+void Full_Model::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 pos, Shader &shader)
 {
 	shader.use();
 	shader.setBool("skeleton", false);
@@ -145,7 +184,7 @@ void Full_Model::Import_Animation(std::string file, Type_of_Animation type,std::
 	if (HasSkeleton)
 	{
 		Assimp::Importer import;	//Import the file 
-		const aiScene* scene = import.ReadFile(file, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_LimitBoneWeights);
+		const aiScene* scene = import.ReadFile(file, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_LimitBoneWeights| aiProcess_ValidateDataStructure);
 
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -154,6 +193,7 @@ void Full_Model::Import_Animation(std::string file, Type_of_Animation type,std::
 		}
 		directory = file.substr(0, file.find_last_of('/'));
 		
+
 		std::vector<aiBone*> bones;
 		if (HasSkeleton)
 		{
@@ -187,7 +227,7 @@ void Full_Model::Import_Animation(std::string file, Type_of_Animation type,std::
 void Full_Model::loadModel(std::string path)
 {
 	Assimp::Importer import;	//importer object from and we will use its ReadFile function
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |aiProcess_LimitBoneWeights);			//Using bitmasks here (later we can use this to import animation)
+	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |aiProcess_LimitBoneWeights|aiProcess_ValidateDataStructure);			//Using bitmasks here (later we can use this to import animation)
 	
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -253,6 +293,8 @@ void Full_Model::ProcessNode(aiNode* node, const aiScene* scene,std::vector<aiBo
 		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
 		meshes.push_back(ProcessMesh(mesh, scene,bones));
 		meshes[i].mesh_transform = Assimp_MatrixConv(node->mTransformation,file_type);
+
+		
 		
 	}
 	//Then do the same for each of its children
@@ -442,12 +484,23 @@ void Full_Model::ProcessSkeleton(const aiScene* scene,std::vector<aiBone*> &bone
 void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &bones,Type_of_Animation type,std::string name)
 {
 	
+	
+
+
+
 	//Go through each animation
 	for (unsigned int k = 0; k < scene->mNumAnimations; ++k)
 	{
-		
+		std::cout << "ticks per second" << scene->mAnimations[k]->mTicksPerSecond << std::endl;
+		std::cout << "Duration" << scene->mAnimations[k]->mDuration << std::endl;
 		//Need times for the keyframes
 		std::vector<float> keyTimes;
+
+		//Number of keyframes (since .fbx does not know for some reason
+		// .fbx only 
+		int number_keyframes=scene->mAnimations[k]->mDuration+1;
+		std::cout << "DURATION_________________________________________________________________________________" << number_keyframes << std::endl;
+		
 
 		//Need keyframes
 		std::vector<std::pair<float, SkeletonPose>> key_frames;
@@ -474,17 +527,29 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 			//Check to make sure this bone is actually in the skeleton structure (it might be a biped system bone)
 			if (bone_index != -1)
 			{
-				
+				//fbx only, this keeps track of which times for the keyframes.
+				//Since fbx and assimp do not fill in all the keyframes( for example, the hands only have 2 out of the 17 it should have)
+				std::vector<int> fbx_times;
+
+
 				//Go through each of the key frames for this bone
 				for (unsigned int i = 0; i < scene->mAnimations[k]->mChannels[j]->mNumPositionKeys; ++i)
 				{
+					std::cout << "animation time" << scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime << std::endl;
+					//std::cout << "number of position keys" << scene->mAnimations[k]->mChannels[j]->mNumPositionKeys << std::endl;
+					//std::cout << "Number of rotation keys"<< scene->mAnimations[k]->mChannels[j]->mNumRotationKeys << std::endl;
+					//std::cout << "Number of scale keys" << scene->mAnimations[k]->mChannels[j]->mNumScalingKeys << std::endl;
+					std::cout << "name of bone" << scene->mAnimations[k]->mChannels[j]->mNodeName.C_Str() << std::endl;
+
+					fbx_times.push_back(scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime);
+
 					//Basic information for Joint pose
 					Quaternion quat;
 					glm::vec3 pos;
 					glm::vec3 scale;
 
 					//Put in the information for the quat,pos, scale
-					quat = Assimp_QuatConv(scene->mAnimations[k]->mChannels[j]->mRotationKeys[i].mValue);
+					quat = Assimp_QuatConv(scene->mAnimations[k]->mChannels[j]->mRotationKeys[i].mValue,this->file_type);
 					
 					//Pos of the joints in its parent for this keyframe
 					pos = Assimp_Vec3Conv(scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mValue,this->file_type);
@@ -498,13 +563,62 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 					if (time)
 					{
 						std::cout << scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime << std::endl;
-						//This is ordered with respect to the keys
-						keyTimes.push_back(scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime);
-						if(i==scene->mAnimations[k]->mChannels[j]->mNumPositionKeys-1)
-							time = false;
+						
+						//Depending on which file type it is, we need to change the time information around.
+
+						if (this->file_type == ".dae")
+						{
+							//This is ordered with respect to the keys
+							keyTimes.push_back(scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime);
+							if (i == scene->mAnimations[k]->mChannels[j]->mNumPositionKeys - 1)
+								time = false;
+						}
+						if (this->file_type == ".fbx")
+						{
+							//This is ordered with respect to the keys
+							keyTimes.push_back(scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime/24);
+							if (i == scene->mAnimations[k]->mChannels[j]->mNumPositionKeys - 1)
+								time = false;
+						}
+
+						std::cout << "keytime" << keyTimes.back() << std::endl;
 						
 					}
 				}
+				//Next, we need to account for the keyframes that don't exists 
+				//Because .fbx just forgets about the ones in between
+				if (this->file_type == ".fbx")
+				{
+					std::cout << "int e" << std::endl;
+					int e = 0;
+					while (bone_keys.size() < number_keyframes)
+					{
+						
+						std::cout << "it" << std::endl;
+						auto it = bone_keys.begin();
+
+						it += fbx_times[e];
+						//std::cout << "fbx" << fbx_times[e] << std::endl;
+						JointPose temp_copy = *it;
+						//std::cout << "jointpose" << std::endl;
+						//std::cout << "number of key frames" << number_keyframes << std::endl;
+						
+						if (e < fbx_times.size() - 1)
+						{
+							bone_keys.insert(it, fbx_times[e + 1]-fbx_times[e]-1, temp_copy);
+						}
+						else
+						{
+							bone_keys.insert(it, number_keyframes - fbx_times[e] - 1, temp_copy);
+						}
+						e += 1;
+						//std::cout << "size of bone keys after wierd thing" << bone_keys.size() << std::endl;
+
+					}
+					std::cout << "size of bone keys after wierd thing" << bone_keys.size() << std::endl;
+				}
+
+
 				//Put in the ordered key frames 
 				Coll_joint_poses.push_back(bone_keys);
 			}
@@ -512,25 +626,56 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 			
 		}
 		
-		// set up the skeleton poses for each keyframes
-		for (unsigned int u = 0; u < scene->mAnimations[k]->mChannels[0]->mNumPositionKeys; ++u)		//# of keyframes for this animation
+		if (this->file_type == ".dae")
 		{
-			
-			//collection of joint poses for a specific key frame
-			std::vector<JointPose> poses;
-			
-			for (unsigned int t = 0; t < skeleton.JointCount; ++t)
+			// set up the skeleton poses for each keyframes
+			for (unsigned int u = 0; u < scene->mAnimations[k]->mChannels[0]->mNumPositionKeys; ++u)		//# of keyframes for this animation
 			{
-				
-				poses.push_back(Coll_joint_poses[t][u]);			//Go through each bone (t parameter) and pick the keyframe (u parameter)
-				
+				//collection of joint poses for a specific key frame
+				std::vector<JointPose> poses;
+
+				for (unsigned int t = 0; t < skeleton.JointCount; ++t)
+				{
+
+					poses.push_back(Coll_joint_poses[t][u]);			//Go through each bone (t parameter) and pick the keyframe (u parameter)
+					//std::cout << "Coll joint poses" << Coll_joint_poses[t].size() << std::endl;
+				}
+				//skeleton keyframe
+				SkeletonPose keyframe(skeleton, poses);
+				key_frames.push_back({ keyTimes[u],keyframe });
+				//std::cout << "KEYTIEMS" << keyTimes[u] << std::endl;
 			}
-			//skeleton keyframe
-			SkeletonPose keyframe(skeleton, poses);
-			key_frames.push_back({ keyTimes[u],keyframe });
-			
 		}
 		
+		if (this->file_type == ".fbx")
+		{
+			// set up the skeleton poses for each keyframes
+			for (unsigned int u = 0; u < number_keyframes; ++u)		//# of keyframes for this animation
+			{
+				//collection of joint poses for a specific key frame
+				std::vector<JointPose> poses;
+
+				for (unsigned int t = 0; t < skeleton.JointCount; ++t)
+				{
+					//std::cout << "Coll joint poses" << Coll_joint_poses[t].size() << std::endl;
+					//std::cout << "u" << u << std::endl;
+					//std::cout << "t" << t << std::endl;
+					std::cout << Coll_joint_poses.size() << std::endl;
+					poses.push_back(Coll_joint_poses[t][u]);			//Go through each bone (t parameter) and pick the keyframe (u parameter)
+					
+				}
+				std::cout <<"keytimes"<< keyTimes.size() << std::endl;
+				//skeleton keyframe
+				SkeletonPose keyframe(skeleton, poses);
+				key_frames.push_back({ (float)u/24,keyframe });
+				//std::cout << "KEYTIEMS" << keyTimes[u] << std::endl;
+			}
+		}
+
+
+		
+
+
 		//Put the new collection of keyframes as a animation in to the data for model
 		Animation temp(scene->mAnimations[k]->mName.C_Str(), this->skeleton, key_frames, type);
 
@@ -542,6 +687,16 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 	}
 	
 }
+
+
+/*void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &bones, Type_of_Animation type, std::string name)
+{
+
+}*/
+
+
+
+
 
 
 

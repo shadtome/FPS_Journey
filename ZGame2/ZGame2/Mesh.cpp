@@ -60,7 +60,7 @@ void Mesh::SetupMesh()
 }
 
 
-void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader)
+void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader &shader)
 {
 	
 	unsigned int diffuseNr = 1;
@@ -99,13 +99,23 @@ void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shad
 	
 	model_matrix = glm::translate(model_matrix, glm::vec3(this->mesh_transform*glm::vec4(pos,1)));
 	
+
+	
+
+
+	
 	shader.setMat4("projection", projection);
 	shader.setMat4("view", view);
 	shader.setMat4("model", model_matrix);
 	model_matrix = glm::transpose(glm::inverse(model_matrix));
 	shader.setMat4("NormalMatrix", model_matrix);
 
-	
+	/*std::cout << "_______________________________________________________________" << std::endl;
+	for (unsigned int k = 0; k < 4; ++k)
+	{
+
+		std::cout << model_matrix[k][0] << "::" << model_matrix[k][1] << "::" << model_matrix[k][2] << "::" << model_matrix[k][3] << std::endl;
+	}*/
 
 	//Draw Mesh
 	
@@ -113,4 +123,71 @@ void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shad
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	
+}
+
+
+
+void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos,float &angle,glm::vec3 &rot_vec, Shader &shader)
+{
+
+	unsigned int diffuseNr = 1;
+	unsigned int specularNr = 1;
+	for (unsigned int i = 0; i < textures.size(); ++i)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);		//Activate proper texture unit before binding
+		//retrieve texture number (the N in diffuse_textureN)
+		std::string number;
+		std::string name = textures[i].type;
+		if (name == "diffuse")
+		{
+			number = std::to_string(diffuseNr++);
+		}
+		else if (name == "specular")
+		{
+			number = std::to_string(specularNr++);
+		}
+
+		shader.setInt(("texture_" + name + number).c_str(), i);
+
+		glBindTexture(GL_TEXTURE_2D, textures[i].ID);
+
+	}
+	glActiveTexture(GL_TEXTURE0);
+
+
+	//Set uniforms for the Animation
+	//-------------------------------------------------
+	//STILL NEED TO DO~~~~~!!!!
+
+	//-------------------------------------------------
+
+	//Set uniforms for matrices
+	glm::mat4 model_matrix;
+
+	model_matrix = glm::translate(model_matrix, glm::vec3(this->mesh_transform*glm::vec4(pos, 1)));
+	model_matrix = glm::rotate(model_matrix, angle, rot_vec);
+
+
+
+
+
+	shader.setMat4("projection", projection);
+	shader.setMat4("view", view);
+	shader.setMat4("model", model_matrix);
+	model_matrix = glm::transpose(glm::inverse(model_matrix));
+	shader.setMat4("NormalMatrix", model_matrix);
+
+	/*std::cout << "_______________________________________________________________" << std::endl;
+	for (unsigned int k = 0; k < 4; ++k)
+	{
+
+		std::cout << model_matrix[k][0] << "::" << model_matrix[k][1] << "::" << model_matrix[k][2] << "::" << model_matrix[k][3] << std::endl;
+	}*/
+
+	//Draw Mesh
+
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
 }

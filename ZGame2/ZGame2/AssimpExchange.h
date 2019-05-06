@@ -2,6 +2,7 @@
 #define ASSIMP_H
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "Quaternion.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -23,7 +24,7 @@
 
 /* Transfer the Assimp Quaternion to the my Quaternion class
 */
- Quaternion Assimp_QuatConv(aiQuaternion &quat);
+ Quaternion Assimp_QuatConv(aiQuaternion &quat,std::string &file_type);
 
 
 /* Transform the Assimp vectors to glm vec3

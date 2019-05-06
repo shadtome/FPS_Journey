@@ -28,13 +28,21 @@
 	result[3][3] = matrix.d4;
 
 	//Now we need to transform it to our coordinate system
-	if (file_type == ".dae" || file_type == ".fbx")
+	if (file_type == ".dae")
 	{
 		//result = glm::transpose(result);
 		glm::mat4 rot(glm::vec4(1.0, 0.0, 0.0, 0.0), glm::vec4(0.0, 0.0, -1.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 0.0), glm::vec4(0.0, 0.0, 0.0, 1.0));
 		//glm::mat4 rot(glm::vec4(0.0, 0.0, 1.0, 0.0), glm::vec4(1.0, 0.0, 0.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 0.0), glm::vec4(0.0, 0.0, 0.0, 1.0));
 		result = rot * result*glm::inverse(rot);
 		
+	}
+
+	if (file_type == ".fbx")
+	{
+		result = (-(float)1 / 100 )* result;
+		//glm::mat4 rot(glm::vec4(1.0, 0.0, 0.0, 0.0), glm::vec4(0.0, 0.0, -1.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 0.0), glm::vec4(0.0, 0.0, 0.0, 1.0));
+
+		//result = rot * result*glm::inverse(rot);
 	}
 	
 	
@@ -47,7 +55,7 @@
  glm::vec3 Assimp_Vec3Conv(aiVector3D &vec, std::string &file_type)
  {
 	 glm::vec3 result;
-	 if (file_type == ".dae" || file_type == ".fbx")
+	 if (file_type == ".dae")
 	 {
 		 result.x = vec.x;
 		 result.y = vec.z;
@@ -59,13 +67,20 @@
 		 result.y = vec.y;
 		 result.z = vec.z;
 	 }
+
+	 if (file_type == ".fbx")
+	 {
+		 result.x = vec.x;
+		 result.y = vec.y;
+		 result.z = vec.z;
+	 }
 	 return result;
  }
 
  glm::vec3 Assimp_ScaleConv(aiVector3D &vec, std::string &file_type)
  {
 	 glm::vec3 result;
-	 if (file_type == ".dae" || file_type == ".fbx")
+	 if (file_type == ".dae")
 	 {
 		 result.x = vec.x;
 		 result.y = vec.y;
@@ -77,17 +92,32 @@
 		 result.y = vec.y;
 		 result.z = vec.z;
 	 }
+
+	 if (file_type == ".fbx")
+	 {
+
+	 }
+
 	 return result;
  }
 
 
- Quaternion Assimp_QuatConv(aiQuaternion &quat)
+ Quaternion Assimp_QuatConv(aiQuaternion &quat,std::string &file_type)
 {
 	Quaternion result;
 
-	result.scalar = -quat.w;								//This is not right, check in the Quaternions for a explnation.  maybe the inverse function or conjuage messing it up
-	result.Vector = glm::vec3(quat.x, quat.z, -quat.y);		//The coordinate system from assimp is z-up, y-forward, and x-right.
-															//while opengl coordinate system is y-up, z-back, x-right
+	if (file_type == ".dae")
+	{
+		result.scalar = -quat.w;								//This is not right, check in the Quaternions for a explnation.  maybe the inverse function or conjuage messing it up
+		result.Vector = glm::vec3(quat.x, quat.z, -quat.y);		//The coordinate system from assimp is z-up, y-forward, and x-right.
+																//while opengl coordinate system is y-up, z-back, x-right
+	}
+	
+	if (file_type == ".fbx")
+	{
+		result.scalar = -quat.w;
+		result.Vector = glm::vec3(quat.x, quat.y, quat.z);
+	}
 	
 
 	return result;

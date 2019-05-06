@@ -52,8 +52,9 @@ public:
 
 
 	//Functions
-	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader,SkeletonPose pose);
-	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader shader);
+	void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 pos, Shader &shader,SkeletonPose &pose);
+	void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 pos, Shader &shader);
+	void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 pos,float &angle,glm::vec3 &rot_vec, Shader &shader, SkeletonPose &pose);
 
 	//Import More Animations for this model
 	//Should we save the bones so we dont have to keep making them, but after the animations are loaded in, there is no point in saving this bone orders

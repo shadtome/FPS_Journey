@@ -83,8 +83,9 @@ void Draw_Entity(Model &Model, glm::mat4 &projection, glm::mat4 &view, glm::mat4
 }
 void Draw_Entity(Model &Model, glm::mat4 &projection, glm::mat4 &view, glm::mat4 &model_M, Shader &shader,SkeletonPose &pose)
 {
-	Model.model->Draw(projection, view, Model.pos, shader, pose);
+	Model.model->Draw(projection, view, Model.pos, Model.angle, Model.Vector_Rot, shader,pose);
 }
+
 
 
 
@@ -190,8 +191,10 @@ void Draw_World(Entity_Manager &world, glm::mat4 &projection, glm::mat4 &view, S
 		//Make the model matrix for this entitiy and map it from model coordinates to world coordinates.  Note that matrix mulplication by 
 		//these functions glm:: multiply on the right, so we need to pre compose
 		model_matrix = glm::translate(model_matrix, world.components.E_Model.Data[k].pos);
-		model_matrix = glm::scale(model_matrix, glm::vec3(world.components.E_Model.Data[k].scale[0], world.components.E_Model.Data[k].scale[1], world.components.E_Model.Data[k].scale[2]));
+		
 		model_matrix = glm::rotate(model_matrix, world.components.E_Model.Data[k].angle, world.components.E_Model.Data[k].Vector_Rot);
+
+		model_matrix = glm::scale(model_matrix, glm::vec3(world.components.E_Model.Data[k].scale[0], world.components.E_Model.Data[k].scale[1], world.components.E_Model.Data[k].scale[2]));
 
 		if (world.Is_Opt_On(world.components.E_Model.Data[k].Entity_ID,ANIMATION) && world.components.E_Model.Data[k].Cur_Pose.Poses_Joints.size()>1)
 		{

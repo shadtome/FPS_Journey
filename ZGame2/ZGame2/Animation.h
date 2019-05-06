@@ -43,7 +43,7 @@ struct Animation
 
 class Animator
 {
-
+public:
 	friend SyncAnim;
 	friend onedim_Blend;
 	friend Difference_Animator;

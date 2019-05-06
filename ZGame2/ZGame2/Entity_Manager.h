@@ -89,8 +89,13 @@ public:
 	void Update_Animation(IEntity* &entity_ptr, SkeletonPose pose);
 
 	//Update Position
-	void Update_Position(unsigned int &ID, glm::vec3 pos);
-	void Update_Position(IEntity* &entity_ptr, glm::vec3 pos);
+	void Update_Position(unsigned int &ID, glm::vec3 deltapos);
+	void Update_Position(IEntity* &entity_ptr, glm::vec3 deltapos);
+
+	void Set_Position(unsigned int &ID, glm::vec3 pos);
+	void Set_Position(IEntity* &entity_ptr, glm::vec3 pos);
+
+	
 
 
 
@@ -103,6 +108,12 @@ public:
 	*/
 	void Blend_Animation(unsigned int entity_id, float beta, SkeletonPose &pose);
 	void Blend_Animation(IEntity* &entity_ptr, float beta, SkeletonPose &pose);
+
+	//Global Functions
+	void Draw_World();
+	//Other functions that are global.
+
+
 
 	//Activate the world (draw, collision, animate ect...)
 	void Activate();

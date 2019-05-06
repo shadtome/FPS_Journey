@@ -36,17 +36,19 @@ void Testing_Ground(State &state)
 	Texture2D container_tex = ResourceManager::LoadTexture("/Users/Cody Tipton/Desktop/GIT/ZGame2/container.jpg", false, "Test");
 
 	//Import Models and corresponding animations
-	ResourceManager::LoadModel("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.fbx", "DUMMY", true, false);
-	/*
-	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae", LOOP, "run", "DUMMY");
-	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player walk animation.dae", LOOP, "walk", "DUMMY");
-	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Left Up.dae", LOOP, "up right", "DUMMY");
-	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Right Up.dae", LOOP, "up left", "DUMMY");
-	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Down Left.dae", LOOP, "down left", "DUMMY");
-	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Down Right.dae", LOOP, "down right", "DUMMY");
-	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/headleft.dae", LOOP, "head left", "DUMMY");
-	*/
-	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.fbx", LOOP, "running", "DUMMY");
+	ResourceManager::LoadModel("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.fbx", "DUMMYfbx", true, false);
+	ResourceManager::LoadModel("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae", "DUMMYdae", true, false);
+	
+	//ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae", LOOP, "run", "DUMMY");
+	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player walk animation.dae", LOOP, "walk", "DUMMYdae");
+	//ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Left Up.dae", LOOP, "up right", "DUMMY");
+	//ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Right Up.dae", LOOP, "up left", "DUMMY");
+	//ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Down Left.dae", LOOP, "down left", "DUMMY");
+	//ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/Down Right.dae", LOOP, "down right", "DUMMY");
+	//ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/headleft.dae", LOOP, "head left", "DUMMY");
+	
+	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.fbx", LOOP, "running", "DUMMYfbx");
+	ResourceManager::LoadAnimation("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/E05 player run animation.dae", LOOP, "running", "DUMMYdae");
 	
 	
 	Full_Model Crysis("/Users/Cody Tipton/Desktop/GIT/Models/Crysis/nanosuit.obj",false,true);
@@ -57,13 +59,14 @@ void Testing_Ground(State &state)
 	//Full_Model Dummy("/Users/Cody Tipton/Desktop/GIT/Models/Dummy/free3Dmodel.dae", true,false);
 
 	//Spawn the DUMMY!
-	IEntity* dummy=Spawner(world, "DUMMY", glm::vec3(0.0, 2.0, 0.0), ANIMATION);
-	IEntity* dummy2 = Spawner(world, "DUMMY", glm::vec3(9.0, 0.0, 0.0), ANIMATION);
+	IEntity* dummy=Spawner(world, "DUMMYfbx", glm::vec3(2.0, 0.0, 0.0), ANIMATION);
+	IEntity* dummy2 = Spawner(world, "DUMMYdae", glm::vec3(-4.0, 0.0, 0.0), ANIMATION);
 
 	std::vector<IEntity*> dummies;
-	for (unsigned int k = 0; k < 2; ++k)
+	int num_dum = 10;
+	for (unsigned int k = 0; k < num_dum; ++k)
 	{
-		dummies.push_back(Spawner(world, "DUMMY", glm::vec3(3.0 + k, 0.0, 0.0), ANIMATION));
+		dummies.push_back(Spawner(world, "DUMMYfbx", glm::vec3(cos(glm::radians((float)k)), 0.0, 0.0), ANIMATION));
 	}
 
 	/*std::vector<IEntity*> rundum;
@@ -75,16 +78,19 @@ void Testing_Ground(State &state)
 	
 	
 	
-	Animator running = world.access_model(dummy)->animators.begin()->second;
-	std::cout << ResourceManager::GetModel("DUMMY").Animations.begin()->second.KeyFrames.size() << std::endl;
-	std::cout << ResourceManager::GetModel("DUMMY").Animations.size() << std::endl;
+	
+	Animator running = world.access_model(dummy)->animators["running1"];
+	std::cout << ResourceManager::GetModel("DUMMYfbx").Animations.begin()->second.KeyFrames.size() << std::endl;
+	std::cout << ResourceManager::GetModel("DUMMYfbx").Animations.size() << std::endl;
 	running.Start_Animation();
 
+	std::cout <<"End time"<<running.End_Time << std::endl;
 
-	std::cout << ResourceManager::GetModel("DUMMY").Animations.begin()->first << std::endl;
-	Animation what =ResourceManager::GetModel("DUMMY").Animations.begin()->second;
+
+	std::cout << ResourceManager::GetModel("DUMMYfbx").Animations.begin()->first << std::endl;
+	Animation what =ResourceManager::GetModel("DUMMYfbx").Animations.begin()->second;
 	
-	for (auto k = ResourceManager::GetModel("DUMMY").Animations.begin(); k!=ResourceManager::GetModel("DUMMY").Animations.end(); ++k)
+	for (auto k = ResourceManager::GetModel("DUMMYfbx").Animations.begin(); k!=ResourceManager::GetModel("DUMMYfbx").Animations.end(); ++k)
 	{
 		std::cout << k->first << std::endl;
 		for (auto j = k->second.KeyFrames.begin(); j != k->second.KeyFrames.end(); ++j)
@@ -93,9 +99,9 @@ void Testing_Ground(State &state)
 		}
 	}
 
-	
-
-
+	float y_axis = 0;
+	float delta=0;
+	world.access_model(dummy->ID)->Vector_Rot = glm::vec3(1.0, 0.0, 0.0);
 		
 	/*onedim_Blend blender;
 	blender.insert(world.access_model(dummy)->animators["walk"],0.0);
@@ -132,24 +138,29 @@ void Testing_Ground(State &state)
 		//Move a box around
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_UP) == GLFW_PRESS)
 		{
+			
+			world.access_model(dummy->ID)->angle += walk;
 			//testing.Change_Blend_Ratio(0.0, -0.1);
 			//world.components.E_Model.Data[0].pos.y += walk;
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		{
 			//testing.Change_Blend_Ratio(0.0, 0.1);
-	
+			world.access_model(dummy->ID)->angle -= walk;
 			//world.components.E_Model.Data[0].pos.y -= walk;
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 		{
+			y_axis -= walk;
 			//testing.Change_Blend_Ratio(0.1, 0.0);
 			//blender.Change_Blend_Ratio(.01);
 			//syn.Change_Blend_Ratio(.01);
 			//world.components.E_Model.Data[0].pos.x += walk;
+			
 		}
 		if (glfwGetKey(Viewer::Window, GLFW_KEY_LEFT) == GLFW_PRESS)
 		{
+			y_axis += walk;
 			//testing.Change_Blend_Ratio(-0.1, 0.0);
 			//blender.Change_Blend_Ratio(-.01);
 			//syn.Change_Blend_Ratio(-0.01);
@@ -173,11 +184,29 @@ void Testing_Ground(State &state)
 		*/
 		
 		
+		
+
+
+
+
 		//SkeletonPose cody3 = syn.Animate(Viewer::deltaTime);
 		//SkeletonPose cody4 = blender.Animate(Viewer::deltaTime);
 		//SkeletonPose aim = testing.Animate(Viewer::deltaTime);
 		SkeletonPose cody5 = running.Animate(Viewer::deltaTime);
+
+
+
+
+
+
 		
+
+
+
+
+
+
+		delta += 0.01;
 		
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
 		world.Update_Animation(dummy, cody5);
@@ -185,8 +214,16 @@ void Testing_Ground(State &state)
 		//world.Update_Animation(dummies[0], aim);
 
 		
+		world.Update_Position(dummy2, glm::vec3(-4.0+delta, 0.0, 0.0));
+		world.Update_Position(dummy->ID, glm::vec3(0.0, y_axis, 0.0));
 		
-		world.Update_Position(dummies[0], glm::vec3(0.0,0.0,0.0));
+		for (unsigned int j = 0; j < num_dum; ++j)
+		{
+			world.Update_Position(dummies[j]->ID, glm::vec3(0.0, y_axis, 0.0));
+			world.Update_Animation(dummies[j]->ID, cody5);
+		}
+
+		world.Update_Position(dummies[0], glm::vec3(5.0,0.0,0.0));
 		Crysis.Draw(Viewer::Projection,Viewer::View,glm::vec3(0.0,0.0,0.0),Nano);
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
 		
