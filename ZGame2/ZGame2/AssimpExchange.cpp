@@ -66,6 +66,7 @@
 		 result.x = vec.x;
 		 result.y = vec.y;
 		 result.z = vec.z;
+		 
 	 }
 
 	 if (file_type == ".fbx")
@@ -73,6 +74,7 @@
 		 result.x = vec.x;
 		 result.y = vec.y;
 		 result.z = vec.z;
+
 	 }
 	 return result;
  }

@@ -80,24 +80,13 @@ void Testing_Ground(State &state)
 	
 	
 	Animator running = world.access_model(dummy)->animators["running1"];
-	std::cout << ResourceManager::GetModel("DUMMYfbx").Animations.begin()->second.KeyFrames.size() << std::endl;
-	std::cout << ResourceManager::GetModel("DUMMYfbx").Animations.size() << std::endl;
 	running.Start_Animation();
 
-	std::cout <<"End time"<<running.End_Time << std::endl;
 
-
-	std::cout << ResourceManager::GetModel("DUMMYfbx").Animations.begin()->first << std::endl;
+	
 	Animation what =ResourceManager::GetModel("DUMMYfbx").Animations.begin()->second;
 	
-	for (auto k = ResourceManager::GetModel("DUMMYfbx").Animations.begin(); k!=ResourceManager::GetModel("DUMMYfbx").Animations.end(); ++k)
-	{
-		std::cout << k->first << std::endl;
-		for (auto j = k->second.KeyFrames.begin(); j != k->second.KeyFrames.end(); ++j)
-		{
-			std::cout << j->first << std::endl;
-		}
-	}
+	
 
 	float y_axis = 0;
 	float delta=0;
@@ -224,7 +213,7 @@ void Testing_Ground(State &state)
 		}
 
 		world.Update_Position(dummies[0], glm::vec3(5.0,0.0,0.0));
-		Crysis.Draw(Viewer::Projection,Viewer::View,glm::vec3(0.0,0.0,0.0),Nano);
+		//Crysis.Draw(Viewer::Projection,Viewer::View,glm::vec3(0.0,0.0,0.0),Nano);
 		Viewer::SetLighting(glm::vec3(0.0, 10.0, 20.0), Nano);
 		
 

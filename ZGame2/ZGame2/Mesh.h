@@ -9,6 +9,9 @@
 #include <vector>
 #include <string>
 
+//constants 
+const static float FBX_ROT = 19.0f;
+
 
 //Organize the vertices with these attributes
 struct Vertex
@@ -47,10 +50,11 @@ public:
 
 	//methods
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indieces, std::vector<Texture> textures);
-	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader &shader);
-	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, float &angle, glm::vec3 &rot_vec, Shader &shader);
+	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader &shader,std::string &file_type);
+	void Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, float &angle, glm::vec3 &rot_vec, Shader &shader,std::string &file_type);
 
 private:
+	
 	//Render Data
 	unsigned int VAO, VBO, EBO;
 

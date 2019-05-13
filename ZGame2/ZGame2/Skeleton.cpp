@@ -23,6 +23,7 @@ int Skeleton::Search(std::string name)
 {
 	for (unsigned int k = 0; k < this->JointCount; ++k)
 	{
+		//std::cout << this->Vector_Joints[k].Name << std::endl;
 		if (name.compare(this->Vector_Joints[k].Name)==0)
 		{
 			return k;

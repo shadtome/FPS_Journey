@@ -111,7 +111,7 @@ void Full_Model::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 pos, Sha
 	for (unsigned int i = 0; i < meshes.size(); ++i)
 	{
 		
-		meshes[i].Draw( projection, view, pos, shader);
+		meshes[i].Draw( projection, view, pos, shader,this->file_type);
 	}
 	shader.Stop();
 }
@@ -147,7 +147,7 @@ void Full_Model::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 pos,floa
 	for (unsigned int i = 0; i < meshes.size(); ++i)
 	{
 
-		meshes[i].Draw(projection, view, pos,angle,rot_vec, shader);
+		meshes[i].Draw(projection, view, pos,angle,rot_vec, shader,this->file_type);
 	}
 	shader.Stop();
 }
@@ -171,7 +171,7 @@ void Full_Model::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 pos, Sha
 	}
 	for (unsigned int i = 0; i < meshes.size(); ++i)
 	{
-		meshes[i].Draw(projection, view, pos, shader);
+		meshes[i].Draw(projection, view, pos, shader,this->file_type);
 	}
 	shader.Stop();
 }
@@ -491,15 +491,14 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 	//Go through each animation
 	for (unsigned int k = 0; k < scene->mNumAnimations; ++k)
 	{
-		std::cout << "ticks per second" << scene->mAnimations[k]->mTicksPerSecond << std::endl;
-		std::cout << "Duration" << scene->mAnimations[k]->mDuration << std::endl;
+		
 		//Need times for the keyframes
 		std::vector<float> keyTimes;
 
 		//Number of keyframes (since .fbx does not know for some reason
 		// .fbx only 
 		int number_keyframes=scene->mAnimations[k]->mDuration+1;
-		std::cout << "DURATION_________________________________________________________________________________" << number_keyframes << std::endl;
+		
 		
 
 		//Need keyframes
@@ -535,11 +534,7 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 				//Go through each of the key frames for this bone
 				for (unsigned int i = 0; i < scene->mAnimations[k]->mChannels[j]->mNumPositionKeys; ++i)
 				{
-					std::cout << "animation time" << scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime << std::endl;
-					//std::cout << "number of position keys" << scene->mAnimations[k]->mChannels[j]->mNumPositionKeys << std::endl;
-					//std::cout << "Number of rotation keys"<< scene->mAnimations[k]->mChannels[j]->mNumRotationKeys << std::endl;
-					//std::cout << "Number of scale keys" << scene->mAnimations[k]->mChannels[j]->mNumScalingKeys << std::endl;
-					std::cout << "name of bone" << scene->mAnimations[k]->mChannels[j]->mNodeName.C_Str() << std::endl;
+					
 
 					fbx_times.push_back(scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime);
 
@@ -562,7 +557,7 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 					//This grabs the key frame times for later, we only need to do it once
 					if (time)
 					{
-						std::cout << scene->mAnimations[k]->mChannels[j]->mPositionKeys[i].mTime << std::endl;
+						
 						
 						//Depending on which file type it is, we need to change the time information around.
 
@@ -581,7 +576,7 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 								time = false;
 						}
 
-						std::cout << "keytime" << keyTimes.back() << std::endl;
+						
 						
 					}
 				}
@@ -589,12 +584,12 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 				//Because .fbx just forgets about the ones in between
 				if (this->file_type == ".fbx")
 				{
-					std::cout << "int e" << std::endl;
+					
 					int e = 0;
 					while (bone_keys.size() < number_keyframes)
 					{
 						
-						std::cout << "it" << std::endl;
+						
 						auto it = bone_keys.begin();
 
 						it += fbx_times[e];
@@ -612,10 +607,10 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 							bone_keys.insert(it, number_keyframes - fbx_times[e] - 1, temp_copy);
 						}
 						e += 1;
-						//std::cout << "size of bone keys after wierd thing" << bone_keys.size() << std::endl;
+						
 
 					}
-					std::cout << "size of bone keys after wierd thing" << bone_keys.size() << std::endl;
+					
 				}
 
 
@@ -636,14 +631,12 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 
 				for (unsigned int t = 0; t < skeleton.JointCount; ++t)
 				{
-
 					poses.push_back(Coll_joint_poses[t][u]);			//Go through each bone (t parameter) and pick the keyframe (u parameter)
-					//std::cout << "Coll joint poses" << Coll_joint_poses[t].size() << std::endl;
 				}
 				//skeleton keyframe
 				SkeletonPose keyframe(skeleton, poses);
 				key_frames.push_back({ keyTimes[u],keyframe });
-				//std::cout << "KEYTIEMS" << keyTimes[u] << std::endl;
+				
 			}
 		}
 		
@@ -657,18 +650,16 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 
 				for (unsigned int t = 0; t < skeleton.JointCount; ++t)
 				{
-					//std::cout << "Coll joint poses" << Coll_joint_poses[t].size() << std::endl;
-					//std::cout << "u" << u << std::endl;
-					//std::cout << "t" << t << std::endl;
-					std::cout << Coll_joint_poses.size() << std::endl;
+					
+					
 					poses.push_back(Coll_joint_poses[t][u]);			//Go through each bone (t parameter) and pick the keyframe (u parameter)
 					
 				}
-				std::cout <<"keytimes"<< keyTimes.size() << std::endl;
+				
 				//skeleton keyframe
 				SkeletonPose keyframe(skeleton, poses);
 				key_frames.push_back({ (float)u/24,keyframe });
-				//std::cout << "KEYTIEMS" << keyTimes[u] << std::endl;
+				
 			}
 		}
 
@@ -680,7 +671,7 @@ void Full_Model::ProcessAnimation(const aiScene* &scene, std::vector<aiBone*> &b
 		Animation temp(scene->mAnimations[k]->mName.C_Str(), this->skeleton, key_frames, type);
 
 		std::string Name = name + std::to_string(k);
-		std::cout << Name << std::endl;
+		
 		this->Animations[Name] = temp;
 		
 		

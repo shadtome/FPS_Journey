@@ -60,7 +60,7 @@ void Mesh::SetupMesh()
 }
 
 
-void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader &shader)
+void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader &shader,std::string &file_type)
 {
 	
 	unsigned int diffuseNr = 1;
@@ -99,7 +99,12 @@ void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader &sha
 	
 	model_matrix = glm::translate(model_matrix, glm::vec3(this->mesh_transform*glm::vec4(pos,1)));
 	
-
+	//For the fbx animations, they are rotated slightly for some reason, so rotate them.
+	if (file_type == ".fbx")
+	{
+		model_matrix = glm::rotate(model_matrix,(float)glm::radians(FBX_ROT), glm::vec3(1.0, 0.0, 0.0));
+	}
+	
 	
 
 
@@ -127,7 +132,7 @@ void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos, Shader &sha
 
 
 
-void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos,float &angle,glm::vec3 &rot_vec, Shader &shader)
+void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos,float &angle,glm::vec3 &rot_vec, Shader &shader,std::string &file_type)
 {
 
 	unsigned int diffuseNr = 1;
@@ -165,6 +170,11 @@ void Mesh::Draw(glm::mat4 projection, glm::mat4 view, glm::vec3 pos,float &angle
 	glm::mat4 model_matrix;
 
 	model_matrix = glm::translate(model_matrix, glm::vec3(this->mesh_transform*glm::vec4(pos, 1)));
+	//For the fbx animations, they are rotated slightly for some reason, so rotate them.
+	if (file_type == ".fbx")
+	{
+		model_matrix = glm::rotate(model_matrix, (float)glm::radians(FBX_ROT), glm::vec3(1.0, 0.0, 0.0));
+	}
 	model_matrix = glm::rotate(model_matrix, angle, rot_vec);
 
 
